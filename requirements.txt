@@ -4,7 +4,9 @@ pydantic
 chromadb
 requests
 langchain-core
+langchain-text-splitters
 langgraph
 google-genai
 python-dotenv
 sentence-transformers
+GitPython
