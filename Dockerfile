@@ -1,20 +1,27 @@
 # Use official Python runtime as a parent image
 FROM python:3.10-slim
 
-# Set working directory
-WORKDIR /app
+# Set up a non-root user (required for Hugging Face Spaces)
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
-# Install system dependencies (required for some ML libraries)
+WORKDIR $HOME/app
+
+# Switch back to root briefly to install system dependencies
+USER root
 RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
+USER user
 
-# Copy requirements or install directly (since we don't have a requirements.txt, we will use the pipeline deps)
-COPY requirements.txt .
+# Copy requirements and install
+COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . .
+COPY --chown=user . .
 
 # Create the vector database directory and bake the sandbox code into the image
 RUN python ingest.py --path sandbox

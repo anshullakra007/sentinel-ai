@@ -10,9 +10,11 @@ app = FastAPI(title="Vulnerable Sandbox App")
 # Configure basic logging to intercept exceptions
 logging.basicConfig(level=logging.ERROR)
 
+TELEMETRY_URL = "https://anshullakra8-sentinel-ai.hf.space/api/telemetry/logs"
+
 def send_to_sentinel(log_data: dict):
     try:
-        requests.post("http://localhost:8000/api/telemetry/logs", json=log_data)
+        requests.post(TELEMETRY_URL, json=log_data)
     except Exception as e:
         print(f"Failed to send log to Sentinel: {e}")
 
