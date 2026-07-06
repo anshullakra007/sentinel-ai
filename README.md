@@ -1,3 +1,14 @@
+---
+title: Sentinel AI
+emoji: 🛡️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+license: mit
+app_file: server.py
+---
+
 <div align="center">
 
 # 🛡️ Sentinel AI
