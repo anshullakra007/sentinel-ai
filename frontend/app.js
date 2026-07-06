@@ -16,16 +16,16 @@ let selectedIncidentIdx = -1;
 let seenIncidentCount = 0;
 
 function formatImpact(level) {
-    if (!level) return { text: 'UNKNOWN', classes: 'bg-gray-500/20 text-gray-500' };
+    if (!level) return { text: 'UNKNOWN', dot: 'bg-zinc-500', classes: 'border-zinc-700 text-zinc-400 bg-surface/50' };
     const l = level.toLowerCase();
-    if (l === 'high') return { text: 'HIGH SEVERITY', classes: 'bg-danger/20 text-danger border border-danger/30' };
-    if (l === 'medium') return { text: 'MEDIUM SEVERITY', classes: 'bg-warning/20 text-warning border border-warning/30' };
-    return { text: 'LOW SEVERITY', classes: 'bg-primary/20 text-primary border border-primary/30' };
+    if (l === 'high') return { text: 'HIGH SEVERITY', dot: 'bg-danger', classes: 'border-zinc-700 text-zinc-200 bg-surface/50' };
+    if (l === 'medium') return { text: 'MEDIUM SEVERITY', dot: 'bg-warning', classes: 'border-zinc-700 text-zinc-200 bg-surface/50' };
+    return { text: 'LOW SEVERITY', dot: 'bg-accent', classes: 'border-zinc-700 text-zinc-200 bg-surface/50' };
 }
 
 function renderFeed() {
     if (incidents.length === 0) {
-        incidentFeed.innerHTML = '<div class="text-center text-gray-500 py-10 italic">No incidents detected yet...</div>';
+        incidentFeed.innerHTML = '<div class="text-center text-zinc-500 text-xs py-10 font-mono">No incidents detected yet...</div>';
         return;
     }
 
@@ -37,13 +37,16 @@ function renderFeed() {
         const impactInfo = formatImpact(incident.diagnostic?.impact_level);
         
         html += `
-            <div onclick="selectIncident(${origIdx})" class="cursor-pointer transition-all duration-200 rounded-xl p-4 border ${isSelected ? 'bg-surface border-primary/50 shadow-[0_0_15px_rgba(79,70,229,0.15)]' : 'bg-surface/50 border-border hover:bg-surface hover:border-gray-600'}">
+            <div onclick="selectIncident(${origIdx})" class="cursor-pointer transition-all duration-200 rounded-md p-3 border ${isSelected ? 'bg-zinc-800 border-zinc-600' : 'bg-surface/30 border-border hover:bg-surface/80 hover:border-zinc-700'}">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs font-mono px-2 py-0.5 rounded ${impactInfo.classes}">${impactInfo.text}</span>
-                    <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border ${impactInfo.classes} flex items-center gap-1.5">
+                        <div class="h-1.5 w-1.5 rounded-full ${impactInfo.dot}"></div>
+                        ${impactInfo.text}
+                    </span>
+                    <span class="text-[10px] text-zinc-500 font-mono">${new Date().toLocaleTimeString()}</span>
                 </div>
-                <h3 class="text-sm font-semibold text-gray-200 truncate" title="${incident.exception}">${incident.exception || 'Unknown Error'}</h3>
-                <p class="text-xs text-gray-400 mt-1 truncate">in <span class="text-gray-300 font-mono">${incident.parsed_file || 'unknown file'}</span></p>
+                <h3 class="text-xs font-semibold text-zinc-200 truncate" title="${incident.exception}">${incident.exception || 'Unknown Error'}</h3>
+                <p class="text-[10px] text-zinc-500 mt-1 truncate font-mono">in <span class="text-zinc-400">${incident.parsed_file || 'unknown file'}</span></p>
             </div>
         `;
     });
@@ -62,8 +65,8 @@ window.selectIncident = function(idx) {
     
     // Populate data
     const impactInfo = formatImpact(inc.diagnostic?.impact_level);
-    elImpact.className = `px-2.5 py-1 text-xs font-bold uppercase rounded-md ${impactInfo.classes}`;
-    elImpact.textContent = impactInfo.text;
+    elImpact.className = `px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded border flex items-center gap-1.5 ${impactInfo.classes}`;
+    elImpact.innerHTML = `<div class="h-1.5 w-1.5 rounded-full ${impactInfo.dot}"></div> ${impactInfo.text}`;
     
     elService.textContent = inc.service_name || 'unknown-service';
     elTime.textContent = 'Reported just now';

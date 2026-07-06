@@ -12,15 +12,14 @@
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0f111a',
-                        darker: '#090a0f',
-                        primary: '#4f46e5',
-                        primaryHover: '#6366f1',
-                        accent: '#10b981',
+                        canvas: '#09090b',     // zinc-950
+                        panel: '#18181b',      // zinc-900
+                        surface: '#27272a',    // zinc-800
+                        border: '#27272a',     // zinc-800
                         danger: '#ef4444',
                         warning: '#f59e0b',
-                        surface: '#1e212b',
-                        border: '#2a2f3a',
+                        accent: '#10b981',
+                        primary: '#e4e4e7',    // zinc-200
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -31,116 +30,119 @@
         }
     </script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body class="bg-darker text-gray-200 font-sans h-screen flex overflow-hidden">
+<body class="bg-canvas text-zinc-300 font-sans h-screen flex overflow-hidden selection:bg-zinc-800">
     <!-- Sidebar -->
-    <aside class="w-20 bg-dark border-r border-border flex flex-col items-center py-6 shadow-xl z-10 relative">
-        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center mb-10 shadow-[0_0_15px_rgba(79,70,229,0.5)]">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+    <aside class="w-14 bg-panel border-r border-border flex flex-col items-center py-4 z-10 relative">
+        <div class="w-8 h-8 bg-zinc-800 rounded-md border border-border flex items-center justify-center mb-6">
+            <svg class="w-4 h-4 text-zinc-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
         </div>
-        <nav class="flex flex-col gap-6 w-full items-center">
-            <a href="#" class="text-primary p-3 rounded-lg bg-primary/10 relative group">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <nav class="flex flex-col gap-3 w-full items-center">
+            <a href="#" class="text-zinc-100 p-2 rounded-md bg-zinc-800 border border-border relative group">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             </a>
-            <a href="#" class="text-gray-500 hover:text-gray-300 p-3 rounded-lg transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <a href="#" class="text-zinc-500 hover:text-zinc-300 p-2 rounded-md transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </a>
-            <a href="#" class="text-gray-500 hover:text-gray-300 p-3 rounded-lg transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <a href="#" class="text-zinc-500 hover:text-zinc-300 p-2 rounded-md transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </a>
         </nav>
     </aside>
 
     <!-- Incident Feed Pane -->
-    <div class="w-1/3 bg-dark border-r border-border flex flex-col h-full z-0 relative">
-        <div class="p-6 border-b border-border bg-dark/80 backdrop-blur-md sticky top-0">
-            <h2 class="text-xl font-semibold text-white tracking-wide flex items-center gap-2">
-                <span class="relative flex h-3 w-3">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-danger opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-3 w-3 bg-danger"></span>
-                </span>
+    <div class="w-80 bg-panel border-r border-border flex flex-col h-full z-0 relative">
+        <div class="px-4 py-3 border-b border-border bg-panel flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xs font-semibold text-zinc-100 tracking-wide flex items-center gap-2">
                 Incident Feed
             </h2>
-            <p class="text-xs text-gray-400 mt-1 uppercase tracking-wider font-semibold">Real-time telemetry</p>
+            <div class="flex items-center gap-1.5">
+                <span class="relative flex h-1.5 w-1.5">
+                  <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Live</span>
+            </div>
         </div>
-        <div id="incident-feed" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+        <div id="incident-feed" class="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar bg-canvas/30">
             <!-- Incidents injected here via JS -->
-            <div class="text-center text-gray-500 py-10 italic">Waiting for telemetry...</div>
+            <div class="text-center text-zinc-500 text-xs py-10 font-mono">Waiting for telemetry...</div>
         </div>
     </div>
 
     <!-- Main Diagnosis Area -->
-    <div class="flex-1 bg-darker flex flex-col h-full relative overflow-hidden">
+    <div class="flex-1 bg-canvas flex flex-col h-full relative overflow-hidden">
         <!-- Header -->
-        <header class="h-20 border-b border-border flex items-center px-8 bg-dark/50 backdrop-blur-lg">
-            <h1 class="text-2xl font-bold text-white tracking-tight">Sentinel <span class="text-primary">AI</span> Diagnostics</h1>
-            <div class="ml-auto flex items-center gap-4">
-                <span class="text-sm text-gray-400">System Status:</span>
-                <span class="px-3 py-1 bg-accent/20 text-accent rounded-full text-xs font-semibold border border-accent/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">All Systems Operational</span>
+        <header class="h-12 border-b border-border flex items-center justify-between px-6 bg-canvas">
+            <div class="flex items-center gap-3">
+                <h1 class="text-sm font-semibold text-zinc-200">Sentinel AI</h1>
+                <span class="text-zinc-600">/</span>
+                <span class="text-sm text-zinc-400 font-mono">Diagnostics</span>
+            </div>
+            <div class="flex items-center gap-2 border border-border bg-panel px-2 py-1 rounded-md">
+                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+                <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">All Systems Operational</span>
             </div>
         </header>
 
         <!-- Content Area -->
-        <main class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-            <div id="empty-state" class="h-full flex flex-col items-center justify-center text-gray-500">
-                <div class="w-24 h-24 mb-6 text-gray-700 opacity-50">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                </div>
-                <h3 class="text-xl font-medium text-gray-400 mb-2">No active incident selected</h3>
-                <p class="text-sm">Select an incident from the feed to view its AI diagnosis and patch.</p>
+        <main class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+            <div id="empty-state" class="h-full flex flex-col items-center justify-center text-zinc-600">
+                <svg class="w-8 h-8 mb-4 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                <h3 class="text-sm font-medium text-zinc-400 mb-1">No active incident selected</h3>
+                <p class="text-[11px] font-mono text-zinc-500">Select an incident from the feed to view diagnostics.</p>
             </div>
             
-            <div id="diagnosis-content" class="hidden max-w-5xl mx-auto space-y-8 pb-12 animate-fade-in-up">
+            <div id="diagnosis-content" class="hidden max-w-5xl mx-auto space-y-4 pb-8 animate-fade-in-up">
                 
                 <!-- Summary Card -->
-                <div class="bg-surface rounded-2xl border border-border p-6 shadow-xl relative overflow-hidden group">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-danger group-hover:w-2 transition-all duration-300"></div>
+                <div class="bg-panel rounded-md border border-border p-5 relative overflow-hidden">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <span id="diag-impact" class="px-2.5 py-1 text-xs font-bold uppercase rounded-md"></span>
-                                <span id="diag-service" class="text-gray-400 text-sm font-mono"></span>
-                                <span id="diag-time" class="text-gray-500 text-sm"></span>
+                            <div class="flex items-center gap-3 mb-3">
+                                <span id="diag-impact" class="px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded border flex items-center gap-1.5"></span>
+                                <span class="text-zinc-700">|</span>
+                                <span id="diag-service" class="text-zinc-400 text-xs font-mono"></span>
+                                <span class="text-zinc-700">|</span>
+                                <span id="diag-time" class="text-zinc-500 text-xs font-mono"></span>
                             </div>
-                            <h2 class="text-2xl font-bold text-white" id="diag-exception"></h2>
+                            <h2 class="text-lg font-semibold text-zinc-100 font-mono" id="diag-exception"></h2>
                         </div>
                     </div>
                     
-                    <div class="mt-6">
-                        <h4 class="text-xs uppercase font-bold text-gray-500 tracking-wider mb-2">Root Cause Analysis</h4>
-                        <p id="diag-root-cause" class="text-gray-200 text-lg leading-relaxed bg-dark/50 p-4 rounded-xl border border-border/50"></p>
+                    <div class="mt-4 border-t border-border pt-4">
+                        <h4 class="text-[10px] uppercase font-bold text-zinc-500 tracking-widest mb-3">Root Cause Analysis</h4>
+                        <p id="diag-root-cause" class="text-zinc-300 text-[13px] leading-relaxed bg-surface/30 p-3 rounded-md border border-border/50"></p>
                     </div>
                 </div>
 
                 <!-- Code Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <!-- Stack Trace -->
-                    <div class="bg-surface rounded-2xl border border-border overflow-hidden shadow-lg flex flex-col">
-                        <div class="bg-dark px-4 py-3 border-b border-border flex items-center justify-between">
-                            <span class="text-xs font-mono text-gray-400 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    <div class="bg-panel rounded-md border border-border overflow-hidden flex flex-col">
+                        <div class="bg-surface/30 px-3 py-2 border-b border-border flex items-center justify-between">
+                            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                                 Stack Trace
                             </span>
                         </div>
-                        <div class="p-4 bg-darker/50 flex-1 overflow-x-auto">
-                            <pre><code id="diag-traceback" class="text-sm font-mono text-danger/90"></code></pre>
+                        <div class="p-3 bg-canvas flex-1 overflow-x-auto">
+                            <pre><code id="diag-traceback" class="text-[11px] font-mono text-zinc-400"></code></pre>
                         </div>
                     </div>
 
                     <!-- AI Suggested Patch -->
-                    <div class="bg-surface rounded-2xl border border-border overflow-hidden shadow-lg flex flex-col relative group">
-                        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
-                        <div class="bg-dark px-4 py-3 border-b border-border flex items-center justify-between z-10 relative">
-                            <span class="text-xs font-mono text-primary flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <div class="bg-panel rounded-md border border-border overflow-hidden flex flex-col relative">
+                        <div class="bg-surface/30 px-3 py-2 border-b border-border flex items-center justify-between z-10 relative">
+                            <span class="text-[10px] font-mono text-zinc-200 uppercase tracking-widest flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                                 AI Suggested Patch
                             </span>
-                            <button class="text-xs bg-primary/20 text-primary hover:bg-primary hover:text-white px-3 py-1 rounded transition-colors font-medium">Apply Patch</button>
+                            <button class="text-[10px] bg-zinc-800 border border-border text-zinc-200 hover:bg-zinc-700 px-2 py-1 rounded transition-colors font-mono uppercase tracking-wider">Apply Patch</button>
                         </div>
-                        <div class="p-4 bg-darker/50 flex-1 overflow-x-auto z-10 relative">
-                            <pre><code id="diag-patch" class="text-sm font-mono text-accent"></code></pre>
+                        <div class="p-3 bg-canvas flex-1 overflow-x-auto z-10 relative">
+                            <pre><code id="diag-patch" class="text-[11px] font-mono text-zinc-200"></code></pre>
                         </div>
                     </div>
                 </div>
