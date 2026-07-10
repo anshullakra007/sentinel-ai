@@ -126,7 +126,7 @@ async def receive_log(payload: LogPayload):
         end_time_llm = time.time()
     else:
         if ai_client:
-        prompt = f"""
+            prompt = f"""
 You are a Principal Site Reliability Engineer. A production crash has occurred.
 Analyze the following traceback and the relevant code context retrieved from our codebase.
 
@@ -136,25 +136,25 @@ TRACEBACK:
 RELEVANT CODE CONTEXT:
 {context}
 """
-        try:
-            response = ai_client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=DiagnosticOutput,
-                    temperature=0.0
+            try:
+                response = ai_client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=DiagnosticOutput,
+                        temperature=0.0
+                    )
                 )
-            )
-            diagnostic_json = json.loads(response.text)
-        except Exception as e:
-            error_str = str(e).lower()
-            if "429" in error_str or "rate limit" in error_str or "resource exhausted" in error_str:
-                from fastapi import HTTPException
-                raise HTTPException(status_code=503, detail="LLM Rate limit exceeded. Please try again later.")
-            diagnostic_json = {"root_cause": f"Failed to call Gemini: {e}", "impact_level": "Unknown", "suggested_patch": ""}
-    else:
-        diagnostic_json = {"root_cause": "GEMINI_API_KEY missing. Cannot diagnose.", "impact_level": "Unknown", "suggested_patch": ""}
+                diagnostic_json = json.loads(response.text)
+            except Exception as e:
+                error_str = str(e).lower()
+                if "429" in error_str or "rate limit" in error_str or "resource exhausted" in error_str:
+                    from fastapi import HTTPException
+                    raise HTTPException(status_code=503, detail="LLM Rate limit exceeded. Please try again later.")
+                diagnostic_json = {"root_cause": f"Failed to call Gemini: {e}", "impact_level": "Unknown", "suggested_patch": ""}
+        else:
+            diagnostic_json = {"root_cause": "GEMINI_API_KEY missing. Cannot diagnose.", "impact_level": "Unknown", "suggested_patch": ""}
     end_time_llm = time.time()
         
     incident = {
