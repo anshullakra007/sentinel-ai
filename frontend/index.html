@@ -107,6 +107,8 @@
                         <div class="flex items-center gap-3 mb-3">
                             <span id="diag-impact" class="px-2 py-1 text-xs font-bold rounded-full border flex items-center gap-1.5 transition-all duration-200"></span>
                             <span class="text-neutral-700">|</span>
+                            <span id="diag-status" class="px-2 py-1 text-[10px] font-bold rounded-full border border-red-900/50 bg-red-950/30 text-red-400 flex items-center gap-1.5 transition-all duration-200 uppercase tracking-wider">🚨 Incident Active</span>
+                            <span class="text-neutral-700">|</span>
                             <span id="diag-service" class="text-neutral-400 text-sm font-mono"></span>
                             <span class="text-neutral-700">|</span>
                             <span id="diag-time" class="text-neutral-500 text-sm font-mono"></span>
@@ -128,11 +130,21 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                                     AI Suggested Patch
                                 </h4>
-                                <button onclick="showDemoToast()" class="text-[10px] bg-neutral-800 border border-neutral-700 text-neutral-200 hover:bg-neutral-700 hover:text-white px-3 py-1.5 rounded transition-all duration-200 font-mono">Apply Patch</button>
                             </div>
                             <!-- Monospace container -->
                             <div class="bg-black/80 p-4 font-mono text-sm overflow-x-auto border-t border-neutral-900">
                                 <pre><code id="diag-patch" class="text-neutral-300 leading-6"></code></pre>
+                            </div>
+                            <!-- Simulated Deployment Actions -->
+                            <div class="px-4 py-3 border-t border-neutral-800 bg-neutral-900/50 flex items-center gap-3">
+                                <button onclick="deployPatch()" id="btn-deploy" class="text-xs bg-green-900/40 border border-green-800 text-green-400 hover:bg-green-800/60 px-4 py-2 rounded transition-all duration-200 font-mono flex items-center gap-2 shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Deploy Patch
+                                </button>
+                                <button onclick="rollbackPatch()" id="btn-rollback" class="text-xs bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-red-900/40 hover:border-red-800 hover:text-red-400 px-4 py-2 rounded transition-all duration-200 font-mono flex items-center gap-2 hidden shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Rollback Changes
+                                </button>
                             </div>
                         </div>
 

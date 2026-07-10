@@ -87,11 +87,17 @@ function renderFeed() {
         const origIdx = incidents.length - 1 - revIdx;
         const isSelected = origIdx === selectedIncidentIdx;
         const impactInfo = formatImpact(incident.diagnostic?.impact_level);
+        const occurrenceBadge = incident.occurrence_count > 1 
+            ? `<span class="px-2 py-0.5 rounded-full bg-blue-900/40 text-blue-400 border border-blue-800/50 text-[9px] font-bold animate-pulse">x${incident.occurrence_count}</span>` 
+            : '';
         
         html += `
             <div onclick="selectIncident(${origIdx})" class="cursor-pointer transition-all duration-200 rounded-md p-4 bg-neutral-900/50 border ${isSelected ? 'border-neutral-500 shadow-md' : 'border-neutral-800 hover:border-neutral-600 hover:bg-neutral-800/50'}">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="${impactInfo.classes}">${impactInfo.text}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="${impactInfo.classes}">${impactInfo.text}</span>
+                        ${occurrenceBadge}
+                    </div>
                     <span class="text-[10px] text-neutral-500 font-mono">${new Date().toLocaleTimeString()}</span>
                 </div>
                 <h3 class="text-sm font-semibold text-neutral-200 truncate" title="${incident.exception}">${incident.exception || 'Unknown Error'}</h3>
@@ -106,6 +112,12 @@ window.selectIncident = function(idx) {
     selectedIncidentIdx = idx;
     renderFeed(); // update selection styling
     
+    // Reset Deployment State UI
+    document.getElementById('diag-status').className = 'px-2 py-1 text-[10px] font-bold rounded-full border border-red-900/50 bg-red-950/30 text-red-400 flex items-center gap-1.5 transition-all duration-200 uppercase tracking-wider';
+    document.getElementById('diag-status').innerHTML = '🚨 Incident Active';
+    document.getElementById('btn-deploy').classList.remove('hidden');
+    document.getElementById('btn-rollback').classList.add('hidden');
+
     const inc = incidents[idx];
     
     emptyState.classList.add('hidden');
@@ -156,6 +168,35 @@ async function pollIncidents() {
 // Start polling
 setInterval(pollIncidents, 2000);
 pollIncidents();
+
+// Feature B: One-Click Rollback Logic
+window.deployPatch = function() {
+    console.log("[SYSTEM] Deploying suggested patch to production cluster...");
+    showDemoToast("Deploying patch and restarting containers...");
+    
+    // Toggle Status Banner
+    const statusBanner = document.getElementById('diag-status');
+    statusBanner.className = 'px-2 py-1 text-[10px] font-bold rounded-full border border-green-900/50 bg-green-950/30 text-green-400 flex items-center gap-1.5 transition-all duration-200 uppercase tracking-wider';
+    statusBanner.innerHTML = '🟢 Patch Deployed & Monitoring';
+    
+    // Toggle Buttons
+    document.getElementById('btn-deploy').classList.add('hidden');
+    document.getElementById('btn-rollback').classList.remove('hidden');
+}
+
+window.rollbackPatch = function() {
+    console.log("[SYSTEM] Manual rollback initiated by operator.");
+    showDemoToast("Rollback executed. Cluster reverting to previous state.");
+    
+    // Revert Status Banner
+    const statusBanner = document.getElementById('diag-status');
+    statusBanner.className = 'px-2 py-1 text-[10px] font-bold rounded-full border border-red-900/50 bg-red-950/30 text-red-400 flex items-center gap-1.5 transition-all duration-200 uppercase tracking-wider';
+    statusBanner.innerHTML = '🚨 Incident Active';
+    
+    // Toggle Buttons
+    document.getElementById('btn-deploy').classList.remove('hidden');
+    document.getElementById('btn-rollback').classList.add('hidden');
+}
 
 // Updated Chaos Trigger for Cloud Compatibility
 const btnChaos = document.getElementById('btn-chaos');

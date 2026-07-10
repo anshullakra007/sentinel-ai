@@ -2,6 +2,7 @@ import os
 import re
 import json
 import time
+import hashlib
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -53,11 +54,29 @@ class DiagnosticOutput(BaseModel):
 
 # In-memory store for incidents for the frontend to poll
 incidents_db = []
+# Deduplication map: traceback_hash -> {"timestamp": float, "incident": dict}
+incident_dedup_map = {}
 
 @app.post("/api/telemetry/logs")
 async def receive_log(payload: LogPayload):
     start_time_total = time.time()
     tb = payload.traceback
+    
+    # --- Feature A: Intelligent Deduplication Engine ---
+    tb_hash = hashlib.sha256(tb.encode('utf-8')).hexdigest()
+    current_time = time.time()
+    
+    if tb_hash in incident_dedup_map:
+        last_seen = incident_dedup_map[tb_hash]["timestamp"]
+        # 5 minute sliding window (300 seconds)
+        if current_time - last_seen < 300:
+            # Increment occurrence count and update timestamp
+            incident_dedup_map[tb_hash]["timestamp"] = current_time
+            incident_dedup_map[tb_hash]["incident"]["occurrence_count"] += 1
+            return {
+                "status": "deduplicated",
+                "metrics": {"total_ms": round((time.time() - start_time_total) * 1000, 2), "vdb_ms": 0, "llm_ms": 0}
+            }
     
     # 1. Parse Traceback
     file_pattern = re.compile(r'File "([^"]+)", line (\d+)')
@@ -91,10 +110,22 @@ async def receive_log(payload: LogPayload):
             print(f"Vector DB query failed: {e}")
     end_time_vdb = time.time()
             
-    # 3. Ask Gemini to diagnose
+    # --- Feature C: Slashing Costs with LLM Fallback ---
     start_time_llm = time.time()
     diagnostic_json = None
-    if ai_client:
+    
+    is_simple_error = any(err in exception_line for err in ["SyntaxError:", "ModuleNotFoundError:", "IndentationError:"])
+    
+    if is_simple_error:
+        # Bypass expensive LLM and ChromaDB entirely for basic native Python errors
+        diagnostic_json = {
+            "root_cause": "Native Python Syntax or Import error detected. Bypassed LLM for cost-optimization.",
+            "impact_level": "Low",
+            "suggested_patch": "# Review your imports or syntax on the indicated line.\n# Pre-baked resolution applied."
+        }
+        end_time_llm = time.time()
+    else:
+        if ai_client:
         prompt = f"""
 You are a Principal Site Reliability Engineer. A production crash has occurred.
 Analyze the following traceback and the relevant code context retrieved from our codebase.
@@ -134,9 +165,13 @@ RELEVANT CODE CONTEXT:
         "exception": exception_line,
         "traceback": tb,
         "context_used": context,
-        "diagnostic": diagnostic_json
+        "diagnostic": diagnostic_json,
+        "occurrence_count": 1 # Feature A tracking
     }
     incidents_db.append(incident)
+    
+    # Store in dedup map
+    incident_dedup_map[tb_hash] = {"timestamp": current_time, "incident": incident}
     
     total_time = time.time() - start_time_total
     vdb_time = end_time_vdb - start_time_vdb
