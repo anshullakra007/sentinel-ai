@@ -146,7 +146,7 @@ window.selectIncident = function(idx) {
 // Polling function
 async function pollIncidents() {
     try {
-        const res = await fetch('/api/incidents');
+        const res = await fetch(`${window.location.origin}/api/incidents`);
         const data = await res.json();
         
         if (data.incidents && data.incidents.length > seenIncidentCount) {
@@ -208,8 +208,9 @@ if (btnChaos) {
         btnChaos.classList.add('opacity-50', 'cursor-not-allowed');
 
         try {
-            // Hits the internal simulation endpoint
-            const response = await fetch('/api/simulate-crash');
+            // Hits the internal simulation endpoint using dynamic host resolution
+            const targetUrl = `${window.location.origin}/api/simulate-crash`;
+            const response = await fetch(targetUrl);
             if (!response.ok) {
                 throw new Error(`${response.status} ${response.statusText}`);
             }
