@@ -15,17 +15,50 @@ let incidents = [];
 let selectedIncidentIdx = -1;
 let seenIncidentCount = 0;
 
+// Prompt 1: Pill Badges logic
 function formatImpact(level) {
-    if (!level) return { text: 'UNKNOWN', dot: 'bg-zinc-500', classes: 'border-zinc-700 text-zinc-400 bg-surface/50' };
+    if (!level) return { text: 'UNKNOWN', classes: 'bg-neutral-800 text-neutral-400 px-2 py-1 text-xs font-bold rounded-full border border-neutral-700' };
     const l = level.toLowerCase();
-    if (l === 'high') return { text: 'HIGH SEVERITY', dot: 'bg-danger', classes: 'border-zinc-700 text-zinc-200 bg-surface/50' };
-    if (l === 'medium') return { text: 'MEDIUM SEVERITY', dot: 'bg-warning', classes: 'border-zinc-700 text-zinc-200 bg-surface/50' };
-    return { text: 'LOW SEVERITY', dot: 'bg-accent', classes: 'border-zinc-700 text-zinc-200 bg-surface/50' };
+    if (l === 'high') return { text: 'CRITICAL', classes: 'bg-red-900/30 text-red-400 px-2 py-1 text-xs font-bold rounded-full border border-red-800' };
+    if (l === 'medium') return { text: 'WARNING', classes: 'bg-amber-900/30 text-amber-400 px-2 py-1 text-xs font-bold rounded-full border border-amber-800' };
+    return { text: 'LOW', classes: 'bg-green-900/30 text-green-400 px-2 py-1 text-xs font-bold rounded-full border border-green-800' };
+}
+
+// Prompt 2: The JS Parser
+// Write a short, easy-to-understand JavaScript function called renderDiff(patchText)
+function renderDiff(patchText) {
+    if (!patchText) return 'No patch suggested.';
+    
+    // Split the text by newlines (\n)
+    const lines = patchText.split('\n');
+    let diffHtml = '';
+    
+    // Loop through each line and apply conditional styling
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // Escape HTML tags to prevent broken rendering
+        const escapedLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        // Conditional Styling based on diff prefixes
+        if (line.startsWith('+')) {
+            // Green for added lines
+            diffHtml += `<span class="text-green-400 bg-green-900/30 w-full block px-2">${escapedLine}</span>\n`;
+        } else if (line.startsWith('-')) {
+            // Red for removed lines
+            diffHtml += `<span class="text-red-400 bg-red-900/30 w-full block px-2">${escapedLine}</span>\n`;
+        } else {
+            // Standard gray for unchanged lines
+            diffHtml += `<span class="text-neutral-400 w-full block px-2">${escapedLine}</span>\n`;
+        }
+    }
+    
+    return diffHtml;
 }
 
 function renderFeed() {
     if (incidents.length === 0) {
-        incidentFeed.innerHTML = '<div class="text-center text-zinc-500 text-xs py-10 font-mono">No incidents detected yet...</div>';
+        incidentFeed.innerHTML = '<div class="text-center text-neutral-500 text-xs py-10 font-mono">No incidents detected yet...</div>';
         return;
     }
 
@@ -37,16 +70,13 @@ function renderFeed() {
         const impactInfo = formatImpact(incident.diagnostic?.impact_level);
         
         html += `
-            <div onclick="selectIncident(${origIdx})" class="cursor-pointer transition-all duration-200 rounded-md p-3 border ${isSelected ? 'bg-zinc-800 border-zinc-600' : 'bg-surface/30 border-border hover:bg-surface/80 hover:border-zinc-700'}">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded border ${impactInfo.classes} flex items-center gap-1.5">
-                        <div class="h-1.5 w-1.5 rounded-full ${impactInfo.dot}"></div>
-                        ${impactInfo.text}
-                    </span>
-                    <span class="text-[10px] text-zinc-500 font-mono">${new Date().toLocaleTimeString()}</span>
+            <div onclick="selectIncident(${origIdx})" class="cursor-pointer transition-colors duration-200 rounded-md p-4 bg-neutral-900 border ${isSelected ? 'border-neutral-500' : 'border-neutral-800 hover:border-neutral-600'}">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="${impactInfo.classes}">${impactInfo.text}</span>
+                    <span class="text-[10px] text-neutral-500 font-mono">${new Date().toLocaleTimeString()}</span>
                 </div>
-                <h3 class="text-xs font-semibold text-zinc-200 truncate" title="${incident.exception}">${incident.exception || 'Unknown Error'}</h3>
-                <p class="text-[10px] text-zinc-500 mt-1 truncate font-mono">in <span class="text-zinc-400">${incident.parsed_file || 'unknown file'}</span></p>
+                <h3 class="text-sm font-semibold text-neutral-200 truncate" title="${incident.exception}">${incident.exception || 'Unknown Error'}</h3>
+                <p class="text-[11px] text-neutral-500 mt-1 truncate font-mono">in <span class="text-neutral-400">${incident.parsed_file || 'unknown file'}</span></p>
             </div>
         `;
     });
@@ -65,8 +95,8 @@ window.selectIncident = function(idx) {
     
     // Populate data
     const impactInfo = formatImpact(inc.diagnostic?.impact_level);
-    elImpact.className = `px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded border flex items-center gap-1.5 ${impactInfo.classes}`;
-    elImpact.innerHTML = `<div class="h-1.5 w-1.5 rounded-full ${impactInfo.dot}"></div> ${impactInfo.text}`;
+    elImpact.className = impactInfo.classes;
+    elImpact.textContent = impactInfo.text;
     
     elService.textContent = inc.service_name || 'unknown-service';
     elTime.textContent = 'Reported just now';
@@ -76,10 +106,12 @@ window.selectIncident = function(idx) {
     // If we have AI diagnosis
     if (inc.diagnostic) {
         elRootCause.innerHTML = inc.diagnostic.root_cause ? inc.diagnostic.root_cause.replace(/\\n/g, '<br>') : 'No root cause identified.';
-        elPatch.textContent = inc.diagnostic.suggested_patch || 'No patch suggested.';
+        
+        // Inject the parsed diff into the patch element
+        elPatch.innerHTML = renderDiff(inc.diagnostic.suggested_patch);
     } else {
         elRootCause.textContent = 'Diagnostic pending or failed.';
-        elPatch.textContent = 'N/A';
+        elPatch.innerHTML = renderDiff('');
     }
     
     elTraceback.textContent = inc.traceback || '';
@@ -111,3 +143,31 @@ async function pollIncidents() {
 // Start polling
 setInterval(pollIncidents, 2000);
 pollIncidents();
+
+// Prompt 3: Trigger Chaos Button Logic
+const btnChaos = document.getElementById('btn-chaos');
+if (btnChaos) {
+    btnChaos.addEventListener('click', async () => {
+        // Change text and disable
+        const originalText = btnChaos.innerHTML;
+        btnChaos.innerHTML = '⚠️ Crashing Server...';
+        btnChaos.disabled = true;
+        btnChaos.classList.add('opacity-50', 'cursor-not-allowed');
+
+        console.log("Crash payload sent to telemetry server.");
+
+        try {
+            await fetch('http://localhost:8001/crash');
+        } catch (e) {
+            console.error("Failed to reach vulnerable app:", e);
+        }
+
+        // Re-enable after 2 seconds
+        setTimeout(() => {
+            btnChaos.innerHTML = originalText;
+            btnChaos.disabled = false;
+            btnChaos.classList.remove('opacity-50', 'cursor-not-allowed');
+        }, 2000);
+    });
+}
+

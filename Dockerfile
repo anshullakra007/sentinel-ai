@@ -28,4 +28,4 @@ COPY --chown=user . .
 RUN python ingest.py --path sandbox
 
 # Command to run the application using dynamic port provided by PaaS
-CMD ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port 7860"]
+CMD ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port ${PORT:-8000}"]
