@@ -19,11 +19,11 @@ app_file: server.py
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.103.0-009688.svg?style=flat&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_Storage-FF6F00.svg)](https://trychroma.com)
 [![Gemini 1.5](https://img.shields.io/badge/Gemini-1.5_Flash-4285F4.svg?style=flat&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=flat&logo=Docker&logoColor=white)](https://www.docker.com/)
 
 *An end-to-end, AI-driven observability pipeline that intercepts raw crash logs, cross-references them against codebase semantic vectors, and autonomously generates production-ready root cause analyses and patches in real-time.*
 
-### 🌍 **[Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)**
+### 🚀 **[Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)**
 
 </div>
 
@@ -42,7 +42,9 @@ Sentinel AI eliminates the manual debugging bottleneck. It streams asynchronous 
 * **Asynchronous Telemetry Receiver:** A highly concurrent FastAPI backend designed to process crash logs without bottlenecking the main application.
 * **Semantic Cross-Referencing:** Extracts file metadata and exception context via Regex, then performs hybrid vector searches to retrieve the exact broken code snippet.
 * **Deterministic AI Diagnostics:** Forces the Gemini LLM into a structured Pydantic schema to return exact impact levels, root causes, and diff patches.
-* **Real-Time SRE Command Center:** A sleek, Tailwind-powered frontend that provides a live "Incident Feed" and side-by-side patch comparisons.
+* **Interactive SRE Command Center:** An enterprise-grade, dark-mode terminal UI built with Tailwind CSS. Features real-time metric updates and status pills.
+* **GitHub-Style Code Diff Visualizer:** Vanilla JS DOM manipulation that provides clean, color-coded visual patches.
+* **Live Chaos Engineering Trigger:** A 1-click crash simulation button right on the dashboard to test the observability pipeline instantly.
 
 ---
 
@@ -68,7 +70,7 @@ graph TD
 
 ## 🏎️ Performance Benchmarks
 
-The system was load-tested locally to measure end-to-end telemetry resolution speeds.
+The system was aggressively load-tested via `asyncio` and `aiohttp` to measure end-to-end telemetry resolution speeds under heavy concurrency.
 
 | Metric | Value |
 |--------|-------|
@@ -91,7 +93,7 @@ git clone https://github.com/anshullakra007/sentinel-ai.git
 cd sentinel-ai
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt # (Or run the pip install string from the pipeline)
+pip install -r requirements.txt
 ```
 
 Create a `.env` file in the root directory and add your Google Gemini API key:
@@ -106,18 +108,20 @@ python ingest.py --path sandbox
 ```
 
 ### 3. Launch the SRE Command Center
-Start the Sentinel AI telemetry server:
+Start the Sentinel AI telemetry server natively:
 ```bash
 python server.py
 ```
 Visit `http://localhost:8000` to open the Dashboard.
 
-### 4. Chaos Engineering (Trigger a Crash)
-In a new terminal window, spin up the deliberately vulnerable microservice:
+### 4. Docker & Cloud Deployment
+Sentinel AI is fully containerized and production-ready for deployment to Hugging Face Spaces or AWS/Render. The `Dockerfile` natively configures a strict non-root user (UID 1000) and exposes port `7860` for compliance with enterprise PaaS environments.
+
+To spin up the entire multi-container architecture locally:
 ```bash
-python sandbox/vulnerable_app.py
+docker-compose up --build
 ```
-Visit `http://localhost:8001/crash` in your browser. Switch back to the Sentinel Dashboard to watch the incident get caught, diagnosed, and patched in real-time.
+This single command spins up both the **Sentinel Core Telemetry Server** (port 8000) and the **Vulnerable Sandbox App** (port 8001), automatically networking them together.
 
 ---
 
