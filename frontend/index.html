@@ -12,29 +12,56 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         code, pre { font-family: 'Fira Code', monospace; }
+        /* Toast animation */
+        @keyframes toast-slide-up {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-animate { animation: toast-slide-up 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="bg-neutral-950 text-neutral-200 h-screen flex flex-col overflow-hidden selection:bg-neutral-800">
+    
     <!-- Header -->
     <header class="h-14 border-b border-neutral-800 bg-neutral-950 flex items-center justify-between px-6 shrink-0 z-20">
         <div class="flex items-center gap-3">
             <span class="text-xl">🛡️</span>
             <h1 class="text-sm font-semibold text-neutral-200 tracking-wide">Sentinel AI</h1>
         </div>
-        <!-- Prompt 3: Trigger Chaos Button -->
-        <button id="btn-chaos" class="bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-md font-bold text-sm flex items-center gap-2 transition-colors">
-            ⚠️ Trigger Chaos
+        <!-- Distinct Chaos Button -->
+        <button id="btn-chaos" class="border border-red-900/50 bg-red-950/30 hover:bg-red-900/50 text-red-400 px-4 py-1.5 rounded-md font-mono text-xs flex items-center gap-2 transition-all duration-200 shadow-[0_0_15px_rgba(220,38,38,0.1)] hover:shadow-[0_0_20px_rgba(220,38,38,0.2)]">
+            ⚠️ TRIGGER CHAOS
         </button>
     </header>
 
-    <!-- Layout Grid: Flex row for Sidebar and Main Panel -->
     <div class="flex flex-1 overflow-hidden">
-        
-        <!-- Left-hand Sidebar for Active Incidents -->
-        <aside class="w-80 bg-neutral-950 border-r border-neutral-800 flex flex-col h-full shrink-0 z-10">
-            <div class="px-4 py-3 border-b border-neutral-800 bg-neutral-950 flex items-center justify-between sticky top-0">
+        <!-- Narrow Navigation Sidebar -->
+        <aside class="w-14 bg-neutral-950 border-r border-neutral-800 flex flex-col items-center py-4 z-10 shrink-0">
+            <nav class="flex flex-col gap-4 w-full items-center">
+                <button class="text-neutral-200 p-2 rounded-md bg-neutral-800 border border-neutral-700 relative group transition-all duration-200">
+                    <!-- Lightning (Diagnostics) -->
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </button>
+                <button onclick="showDemoToast()" class="text-neutral-500 hover:text-neutral-300 p-2 rounded-md transition-all duration-200 hover:bg-neutral-900">
+                    <!-- Chart (Metrics) -->
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </button>
+                <button onclick="showDemoToast()" class="text-neutral-500 hover:text-neutral-300 p-2 rounded-md transition-all duration-200 hover:bg-neutral-900">
+                    <!-- Clock (History) -->
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+                <button onclick="showDemoToast()" class="text-neutral-500 hover:text-neutral-300 p-2 rounded-md transition-all duration-200 hover:bg-neutral-900 mt-auto">
+                    <!-- Gear (Settings) -->
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Incident Feed Sidebar -->
+        <aside class="w-80 bg-neutral-900/30 border-r border-neutral-800 flex flex-col h-full shrink-0 z-10">
+            <div class="px-4 py-3 border-b border-neutral-800 bg-neutral-900/50 flex items-center justify-between sticky top-0 backdrop-blur-sm">
                 <h2 class="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-2">
-                    Active Incidents
+                    Incident Feed
                 </h2>
                 <div class="flex items-center gap-1.5">
                     <span class="relative flex h-2 w-2">
@@ -46,8 +73,14 @@
             </div>
             
             <div id="incident-feed" class="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar">
-                <!-- Incidents injected here via JS -->
-                <div class="text-center text-neutral-500 text-xs py-10 font-mono">Waiting for telemetry...</div>
+                <!-- Premium Empty State for Feed -->
+                <div class="text-center py-12 flex flex-col items-center justify-center space-y-4">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                    </span>
+                    <span class="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Listening for telemetry...</span>
+                </div>
             </div>
         </aside>
 
@@ -55,10 +88,16 @@
         <main class="flex-1 bg-neutral-950 flex flex-col h-full relative overflow-hidden">
             <!-- Content Area -->
             <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                <div id="empty-state" class="h-full flex flex-col items-center justify-center text-neutral-600">
-                    <svg class="w-8 h-8 mb-4 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-                    <h3 class="text-sm font-medium text-neutral-400 mb-1">No active incident selected</h3>
-                    <p class="text-[11px] font-mono text-neutral-500">Select an incident from the feed to view diagnostics.</p>
+                
+                <!-- Premium Empty State for Diagnostics -->
+                <div id="empty-state" class="h-full flex flex-col items-center justify-center text-neutral-600 space-y-6">
+                    <div class="p-4 bg-neutral-900/50 border border-neutral-800 rounded-full">
+                        <svg class="w-12 h-12 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-base font-semibold text-neutral-300 mb-2">Sentinel AI is active</h3>
+                        <p class="text-xs font-mono text-neutral-500 max-w-sm mx-auto leading-relaxed">Click 'Trigger Chaos' to simulate a production outage and test the LLM resolution pipeline.</p>
+                    </div>
                 </div>
                 
                 <div id="diagnosis-content" class="hidden max-w-5xl mx-auto space-y-6 pb-8 animate-fade-in-up">
@@ -66,8 +105,7 @@
                     <!-- Summary Section -->
                     <div class="mb-6">
                         <div class="flex items-center gap-3 mb-3">
-                            <!-- Status Badges will be injected here -->
-                            <span id="diag-impact" class="px-2 py-1 text-xs font-bold rounded-full border flex items-center gap-1.5"></span>
+                            <span id="diag-impact" class="px-2 py-1 text-xs font-bold rounded-full border flex items-center gap-1.5 transition-all duration-200"></span>
                             <span class="text-neutral-700">|</span>
                             <span id="diag-service" class="text-neutral-400 text-sm font-mono"></span>
                             <span class="text-neutral-700">|</span>
@@ -76,7 +114,7 @@
                         <h2 class="text-2xl font-semibold text-neutral-100 font-mono" id="diag-exception"></h2>
                     </div>
                     
-                    <div class="bg-neutral-900 rounded-lg border border-neutral-800 p-6">
+                    <div class="bg-neutral-900/50 rounded-lg border border-neutral-800 p-6 shadow-sm">
                         <h4 class="text-xs uppercase font-bold text-neutral-500 tracking-widest mb-3">Root Cause Analysis</h4>
                         <p id="diag-root-cause" class="text-neutral-300 text-sm leading-relaxed"></p>
                     </div>
@@ -84,37 +122,45 @@
                     <!-- Code Grid -->
                     <div class="grid grid-cols-1 gap-6">
                         <!-- AI Suggested Patch -->
-                        <div>
-                            <h4 class="text-xs uppercase font-bold text-neutral-500 tracking-widest mb-3 flex items-center justify-between">
-                                AI Suggested Patch
-                                <button class="text-[10px] bg-neutral-800 border border-neutral-700 text-neutral-200 hover:bg-neutral-700 px-3 py-1.5 rounded transition-colors font-mono">Apply Patch</button>
-                            </h4>
-                            <!-- Monospace container with dark terminal aesthetic -->
-                            <div class="bg-black p-4 rounded-md font-mono text-sm overflow-x-auto border border-neutral-800">
+                        <div class="bg-neutral-900/50 rounded-lg border border-neutral-800 shadow-sm overflow-hidden flex flex-col">
+                            <div class="px-4 py-3 border-b border-neutral-800 bg-neutral-900/80 flex items-center justify-between">
+                                <h4 class="text-xs uppercase font-bold text-neutral-400 tracking-widest flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    AI Suggested Patch
+                                </h4>
+                                <button onclick="showDemoToast()" class="text-[10px] bg-neutral-800 border border-neutral-700 text-neutral-200 hover:bg-neutral-700 hover:text-white px-3 py-1.5 rounded transition-all duration-200 font-mono">Apply Patch</button>
+                            </div>
+                            <!-- Monospace container -->
+                            <div class="bg-black/80 p-4 font-mono text-sm overflow-x-auto border-t border-neutral-900">
                                 <pre><code id="diag-patch" class="text-neutral-300 leading-6"></code></pre>
                             </div>
                         </div>
 
                         <!-- Stack Trace -->
-                        <div>
-                            <h4 class="text-xs uppercase font-bold text-neutral-500 tracking-widest mb-3">Stack Trace</h4>
-                            <div class="bg-black p-4 rounded-md overflow-x-auto border border-neutral-800">
+                        <div class="bg-neutral-900/50 rounded-lg border border-neutral-800 shadow-sm overflow-hidden flex flex-col">
+                            <div class="px-4 py-3 border-b border-neutral-800 bg-neutral-900/80">
+                                <h4 class="text-xs uppercase font-bold text-neutral-400 tracking-widest">Stack Trace</h4>
+                            </div>
+                            <div class="bg-black/80 p-4 overflow-x-auto border-t border-neutral-900">
                                 <pre><code id="diag-traceback" class="text-xs font-mono text-neutral-500"></code></pre>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Prompt 4: Telemetry Metrics Footer -->
-                    <div class="flex justify-between items-center bg-neutral-950 p-3 rounded-b-md border-t border-neutral-800 mt-6">
-                        <span class="text-xs text-neutral-400 font-mono">🟢 Vector Search (ChromaDB): <span class="text-white">~110ms</span></span>
-                        <span class="text-xs text-neutral-400 font-mono">🟣 LLM Inference (Gemini): <span class="text-white">~105ms</span></span>
-                        <span class="text-xs text-neutral-400 font-mono">⚡ Total Resolution: <span class="text-white font-bold">~215ms</span></span>
+                    <!-- Telemetry Metrics Footer -->
+                    <div class="flex justify-between items-center bg-neutral-900/30 p-4 rounded-lg border border-neutral-800 mt-6 shadow-sm">
+                        <span class="text-[11px] text-neutral-400 font-mono uppercase tracking-widest">🟢 Vector Search: <span class="text-white ml-1">~110ms</span></span>
+                        <span class="text-[11px] text-neutral-400 font-mono uppercase tracking-widest">🟣 LLM Inference: <span class="text-white ml-1">~105ms</span></span>
+                        <span class="text-[11px] text-neutral-400 font-mono uppercase tracking-widest">⚡ Total Resolution: <span class="text-white font-bold ml-1">~215ms</span></span>
                     </div>
 
                 </div>
             </div>
         </main>
     </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
 
     <script src="/static/app.js"></script>
 </body>

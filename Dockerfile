@@ -18,14 +18,14 @@ RUN apt-get update && apt-get install -y \
 USER user
 
 # Copy requirements and install
-COPY --chown=user requirements.txt .
+COPY --chown=user:user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY --chown=user . .
+COPY --chown=user:user . .
 
 # Create the vector database directory and bake the sandbox code into the image
 RUN python ingest.py --path sandbox
 
-# Command to run the application using dynamic port provided by PaaS
-CMD ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Command to run the application on Hugging Face Default Port
+CMD ["sh", "-c", "uvicorn server:app --host 0.0.0.0 --port 7860"]

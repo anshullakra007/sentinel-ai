@@ -117,6 +117,10 @@ RELEVANT CODE CONTEXT:
             )
             diagnostic_json = json.loads(response.text)
         except Exception as e:
+            error_str = str(e).lower()
+            if "429" in error_str or "rate limit" in error_str or "resource exhausted" in error_str:
+                from fastapi import HTTPException
+                raise HTTPException(status_code=503, detail="LLM Rate limit exceeded. Please try again later.")
             diagnostic_json = {"root_cause": f"Failed to call Gemini: {e}", "impact_level": "Unknown", "suggested_patch": ""}
     else:
         diagnostic_json = {"root_cause": "GEMINI_API_KEY missing. Cannot diagnose.", "impact_level": "Unknown", "suggested_patch": ""}
@@ -146,6 +150,21 @@ RELEVANT CODE CONTEXT:
             "llm_ms": round(llm_time * 1000, 2)
         }
     }
+
+@app.get("/api/simulate-crash")
+async def simulate_crash():
+    tb_str = """Traceback (most recent call last):
+  File "sandbox/vulnerable_app.py", line 59, in trigger_crash
+    role = user_data["role"]
+KeyError: 'role'"""
+    
+    payload = LogPayload(
+        service_name="vulnerable_sandbox_app",
+        timestamp="now",
+        traceback=tb_str
+    )
+    # Directly invoke the pipeline instead of sending an HTTP request
+    return await receive_log(payload)
 
 @app.get("/api/incidents")
 async def get_incidents():
