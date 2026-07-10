@@ -23,7 +23,7 @@ app_file: server.py
 
 *An end-to-end, AI-driven observability pipeline that intercepts raw crash logs, cross-references them against codebase semantic vectors, and autonomously generates production-ready root cause analyses and patches in real-time.*
 
-### 🌍 **[Live Demo: Sentinel AI Command Center](https://your-deployment-link-here.com)**
+### 🌍 **[Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)**
 
 </div>
 
