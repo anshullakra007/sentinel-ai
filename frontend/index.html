@@ -132,7 +132,7 @@
                                 </h4>
                             </div>
                             <!-- Monospace container -->
-                            <div class="bg-black/80 p-4 font-mono text-sm overflow-x-auto border-t border-neutral-900">
+                            <div class="bg-black/80 p-4 font-mono text-sm overflow-x-auto overflow-y-auto max-h-[400px] border-t border-neutral-900 custom-scrollbar relative">
                                 <pre><code id="diag-patch" class="text-neutral-300 leading-6"></code></pre>
                             </div>
                             <!-- Simulated Deployment Actions -->
@@ -153,7 +153,7 @@
                             <div class="px-4 py-3 border-b border-neutral-800 bg-neutral-900/80">
                                 <h4 class="text-xs uppercase font-bold text-neutral-400 tracking-widest">Stack Trace</h4>
                             </div>
-                            <div class="bg-black/80 p-4 overflow-x-auto border-t border-neutral-900">
+                            <div class="bg-black/80 p-4 overflow-x-auto overflow-y-auto max-h-[300px] border-t border-neutral-900 custom-scrollbar relative">
                                 <pre><code id="diag-traceback" class="text-xs font-mono text-neutral-500"></code></pre>
                             </div>
                         </div>
@@ -172,7 +172,7 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <script src="/static/app.js"></script>
 </body>
