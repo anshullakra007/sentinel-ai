@@ -146,19 +146,28 @@ window.selectIncident = function(idx) {
 // Polling function
 async function pollIncidents() {
     try {
-        const res = await fetch(`${window.location.origin}/api/incidents`);
+        const res = await fetch('/api/incidents');
         const data = await res.json();
         
-        if (data.incidents && data.incidents.length > seenIncidentCount) {
-            incidents = data.incidents;
+        if (data.incidents) {
+            // Check if length increased OR if the data mutated (e.g. occurrence_count increased due to deduplication)
+            const isNew = data.incidents.length > seenIncidentCount;
+            const isMutated = JSON.stringify(incidents) !== JSON.stringify(data.incidents);
             
-            if (selectedIncidentIdx === -1) {
-                selectedIncidentIdx = 0;
-                selectIncident(0);
+            if (isNew || isMutated) {
+                incidents = data.incidents;
+                seenIncidentCount = incidents.length;
+                renderFeed();
+                
+                // Auto-select first if none selected, otherwise refresh current view
+                if (selectedIncidentIdx === -1 && incidents.length > 0) {
+                    selectedIncidentIdx = 0;
+                    selectIncident(0);
+                } else if (isMutated && selectedIncidentIdx !== -1) {
+                    // Re-render the selected incident to update the badge
+                    selectIncident(selectedIncidentIdx);
+                }
             }
-            
-            seenIncidentCount = incidents.length;
-            renderFeed();
         }
     } catch (e) {
         console.error('Failed to poll incidents:', e);
@@ -208,9 +217,8 @@ if (btnChaos) {
         btnChaos.classList.add('opacity-50', 'cursor-not-allowed');
 
         try {
-            // Hits the internal simulation endpoint using dynamic host resolution
-            const targetUrl = `${window.location.origin}/api/simulate-crash`;
-            const response = await fetch(targetUrl);
+            // Hits the internal simulation endpoint
+            const response = await fetch('/api/simulate-crash');
             if (!response.ok) {
                 throw new Error(`${response.status} ${response.statusText}`);
             }
