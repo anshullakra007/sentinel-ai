@@ -208,17 +208,34 @@ if (btnChaos) {
         btnChaos.classList.add('opacity-50', 'cursor-not-allowed');
 
         try {
-            // Hits the internal simulation endpoint instead of localhost
-            await fetch('/api/simulate-crash');
+            // Hits the internal simulation endpoint
+            const response = await fetch('/api/simulate-crash');
+            if (!response.ok) {
+                throw new Error(`${response.status} ${response.statusText}`);
+            }
             showDemoToast("Crash payload successfully injected into telemetry stream.");
         } catch (e) {
             console.error("Failed to trigger simulation:", e);
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-animate bg-red-950 border border-red-800 text-red-200 px-4 py-3 rounded-md shadow-lg flex items-center gap-3 text-sm font-mono pointer-events-auto';
+            toast.innerHTML = `
+                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Failed to trigger chaos: ${e.message}
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(100%)';
+                toast.style.transition = 'all 0.3s ease-in';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        } finally {
+            setTimeout(() => {
+                btnChaos.innerHTML = originalText;
+                btnChaos.disabled = false;
+                btnChaos.classList.remove('opacity-50', 'cursor-not-allowed');
+            }, 2000);
         }
-
-        setTimeout(() => {
-            btnChaos.innerHTML = originalText;
-            btnChaos.disabled = false;
-            btnChaos.classList.remove('opacity-50', 'cursor-not-allowed');
-        }, 2000);
     });
 }
