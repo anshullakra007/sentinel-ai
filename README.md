@@ -70,17 +70,14 @@ graph TD
 
 ## 🏎️ Performance Benchmarks
 
-The system was aggressively load-tested via `asyncio` and `aiohttp` to measure end-to-end telemetry resolution speeds under heavy concurrency.
+The system was aggressively load-tested using a custom asynchronous benchmarking suite to measure end-to-end telemetry resolution speeds under heavy concurrency, evaluating the VectorDB caching, Deduplication engine, and LLM latency.
 
-| Metric | Value |
-|--------|-------|
-| **Success Rate** | 100.0% |
-| **Average Total Resolution Time** | ~215 ms |
-| **Average VectorDB Query (Chroma)**| ~110 ms |
-| **Average LLM Inference (Gemini)** | ~105 ms |
-| **P90 Total Resolution Time** | ~515 ms |
+**[View the Deep Exhaustive Benchmarking Report](BENCHMARKS.md)** for detailed metrics on:
+- Complex Errors (LLM Required) at varying concurrency loads
+- Deduplication Engine performance (100 concurrent identical requests)
+- LLM Bypass Fallbacks for Syntax Errors
 
-*Sentinel AI catches, cross-references, and patches production bugs in less than a quarter of a second.*
+*Sentinel AI catches, cross-references, and patches production bugs in less than a quarter of a second for cached errors, and under a second for complex errors.*
 
 ---
 
