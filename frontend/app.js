@@ -98,7 +98,7 @@ function renderFeed() {
                         <span class="${impactInfo.className}">${impactInfo.text}</span>
                         ${occurrenceBadge}
                     </div>
-                    <span class="item-time">${new Date().toLocaleTimeString()}</span>
+                    <span class="item-time">${incident.timestamp || new Date().toLocaleTimeString()}</span>
                 </div>
                 <h3 class="item-title" title="${incident.exception}">${incident.exception || 'Unknown Error'}</h3>
                 <p class="item-file">in <span>${incident.parsed_file || 'unknown file'}</span></p>
@@ -143,6 +143,16 @@ window.selectIncident = function(idx) {
     }
     
     elTraceback.textContent = inc.traceback || '';
+    
+    if (inc.metrics) {
+        document.getElementById('metric-vdb').textContent = '~' + inc.metrics.vdb_ms + 'ms';
+        document.getElementById('metric-llm').textContent = '~' + inc.metrics.llm_ms + 'ms';
+        document.getElementById('metric-total').textContent = '~' + inc.metrics.total_ms + 'ms';
+    } else {
+        document.getElementById('metric-vdb').textContent = '~0ms';
+        document.getElementById('metric-llm').textContent = '~0ms';
+        document.getElementById('metric-total').textContent = '~0ms';
+    }
 }
 
 // Polling function

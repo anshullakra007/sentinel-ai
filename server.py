@@ -159,14 +159,19 @@ RELEVANT CODE CONTEXT:
         
     incident = {
         "service_name": payload.service_name,
-        "timestamp": payload.timestamp,
+        "timestamp": payload.timestamp if payload.timestamp != "now" else time.strftime("%I:%M:%S %p"),
         "parsed_file": target_file,
         "line_number": line_num,
         "exception": exception_line,
         "traceback": tb,
         "context_used": context,
         "diagnostic": diagnostic_json,
-        "occurrence_count": 1 # Feature A tracking
+        "occurrence_count": 1, # Feature A tracking
+        "metrics": {
+            "vdb_ms": round((end_time_vdb - start_time_vdb) * 1000, 2),
+            "llm_ms": round((end_time_llm - start_time_llm) * 1000, 2),
+            "total_ms": round((time.time() - start_time_total) * 1000, 2)
+        }
     }
     incidents_db.append(incident)
     
