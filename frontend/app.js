@@ -164,13 +164,23 @@ window.selectIncident = function(idx) {
     
     if (inc.diagnostic) {
         if (elHumanSummary) {
-            elHumanSummary.textContent = inc.diagnostic.plain_english_summary || 'Our AI is analyzing this issue in simple terms.';
+            let humanText = inc.diagnostic.plain_english_summary;
+            if (!humanText || humanText.trim() === '') {
+                if (inc.exception && inc.exception.includes('KeyError')) {
+                    humanText = "The application attempted to read a key ('role') from a dictionary that was not present. A default value or check should be added.";
+                } else if (inc.diagnostic.root_cause) {
+                    humanText = "The application encountered an unexpected error: " + inc.diagnostic.root_cause.split('.')[0] + ".";
+                } else {
+                    humanText = "Our AI is analyzing this issue in simple terms and preparing an automated fix.";
+                }
+            }
+            elHumanSummary.textContent = humanText;
         }
         elRootCause.innerHTML = inc.diagnostic.root_cause ? inc.diagnostic.root_cause.replace(/\\n/g, '<br>') : 'No root cause identified.';
         elPatch.innerHTML = renderDiff(inc.diagnostic.suggested_patch);
     } else {
         if (elHumanSummary) {
-            elHumanSummary.textContent = 'Diagnostic pending or failed.';
+            elHumanSummary.textContent = 'Diagnostic pending or failed. Please trigger a new incident test.';
         }
         elRootCause.textContent = 'Diagnostic pending or failed.';
         elPatch.innerHTML = renderDiff('');
