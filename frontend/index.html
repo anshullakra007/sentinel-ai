@@ -3,23 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel AI - Autonomous SRE</title>
-    <!-- Google Fonts -->
+    <title>Sentinel AI — Autonomous SRE Command Center</title>
+    <!-- Google Fonts: Inter & JetBrains Mono (Geist-like typography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar Navigation -->
+        <!-- Minimalistic Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-brand">
-                <div class="brand-icon">🛡️</div>
+                <div class="brand-icon" title="Sentinel AI">
+                    <i data-lucide="shield-check" class="icon-brand"></i>
+                </div>
             </div>
             <nav class="sidebar-nav">
-                <button class="nav-item active" aria-label="Diagnostics">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <button id="nav-diag" onclick="switchView('diag')" class="nav-item active" title="Diagnostics Feed">
+                    <i data-lucide="activity"></i>
+                </button>
+                <button id="nav-metrics" onclick="switchView('metrics')" class="nav-item" title="Telemetry Metrics">
+                    <i data-lucide="bar-chart-2"></i>
+                </button>
+                <button id="nav-nodes" onclick="switchView('nodes')" class="nav-item" title="Cluster Nodes">
+                    <i data-lucide="cpu"></i>
+                </button>
+                <div class="nav-spacer"></div>
+                <button id="nav-settings" onclick="switchView('settings')" class="nav-item" title="Settings">
+                    <i data-lucide="settings"></i>
                 </button>
             </nav>
         </aside>
@@ -27,111 +41,329 @@
         <!-- Incident Feed Panel -->
         <section class="incident-feed-panel">
             <header class="feed-header">
-                <h2>Incident Feed</h2>
-                <div class="live-indicator">
-                    <span class="ping"></span>
-                    <span class="dot"></span>
-                    <span class="label">LIVE</span>
+                <div class="feed-header-top">
+                    <h2>Incident Stream</h2>
+                    <div class="live-indicator">
+                        <span class="ping"></span>
+                        <span class="dot"></span>
+                        <span class="label">LIVE</span>
+                    </div>
+                </div>
+                <!-- Search & Filter Bar -->
+                <div class="feed-search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="feed-filter" placeholder="Filter incidents by exception or file..." autocomplete="off">
                 </div>
             </header>
             <div id="incident-feed" class="feed-list custom-scrollbar">
                 <!-- Empty State -->
                 <div class="empty-feed">
-                    <div class="pulse-ring"></div>
-                    <span>Listening for telemetry...</span>
+                    <div class="empty-ring-container">
+                        <div class="pulse-ring"></div>
+                        <i data-lucide="radio" class="empty-icon"></i>
+                    </div>
+                    <span class="empty-title">Listening for telemetry</span>
+                    <span class="empty-sub">Production cluster is healthy</span>
                 </div>
             </div>
         </section>
 
-        <!-- Main Diagnostic Area -->
+        <!-- Main Diagnostic Workspace -->
         <main class="main-content">
             <header class="main-header">
-                <div class="header-title">
-                    <h1>Sentinel AI Command Center</h1>
+                <div class="header-breadcrumb">
+                    <span class="breadcrumb-root">Sentinel AI</span>
+                    <span class="breadcrumb-separator">/</span>
+                    <span class="breadcrumb-current">production-us-east-1</span>
+                    <div class="cluster-status-pill">
+                        <span class="status-dot"></span>
+                        <span class="status-text">HEALTHY</span>
+                    </div>
                 </div>
-                <button id="btn-chaos" class="btn-chaos glass-effect">
-                    <span class="icon">⚠️</span>
+                <button id="btn-chaos" class="btn-chaos">
+                    <i data-lucide="zap" class="chaos-icon"></i>
                     <span class="text">TRIGGER CHAOS</span>
                 </button>
             </header>
 
             <div class="content-scroll custom-scrollbar">
-                <!-- Initial Empty State -->
-                <div id="empty-state" class="diagnostic-empty-state">
-                    <div class="icon-container">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    </div>
-                    <h3>System Online & Active</h3>
-                    <p>Click 'Trigger Chaos' to simulate a production outage and test the AI resolution pipeline.</p>
-                </div>
-
-                <!-- Active Diagnosis View -->
-                <div id="diagnosis-content" class="diagnosis-view hidden">
-                    <div class="diagnosis-header">
-                        <div class="metadata-row">
-                            <span id="diag-impact" class="badge"></span>
-                            <span class="divider"></span>
-                            <span id="diag-status" class="badge status-active">🚨 Incident Active</span>
-                            <span class="divider"></span>
-                            <span id="diag-service" class="metadata-text font-mono"></span>
-                            <span class="divider"></span>
-                            <span id="diag-time" class="metadata-text text-muted font-mono"></span>
+                <!-- VIEW 1: Active Diagnostics Feed View -->
+                <div id="view-diag" class="view-panel">
+                    <!-- Initial Minimal Empty State -->
+                    <div id="empty-state" class="diagnostic-empty-state">
+                        <div class="empty-state-card glass-effect">
+                            <div class="icon-container">
+                                <i data-lucide="check-circle-2"></i>
+                            </div>
+                            <h3>No Active Exceptions</h3>
+                            <p>All monitored microservices are reporting optimal latency. Click <strong>"Trigger Chaos"</strong> above to inject a production exception and observe the autonomous AI resolution pipeline.</p>
                         </div>
-                        <h2 id="diag-exception" class="exception-title font-mono"></h2>
                     </div>
 
-                    <div class="card glass-effect rca-card">
-                        <h4 class="card-subtitle">Root Cause Analysis</h4>
-                        <p id="diag-root-cause" class="rca-text"></p>
-                    </div>
+                    <!-- Active Diagnosis View (Linear / Vercel Mission Control Hierarchy) -->
+                    <div id="diagnosis-content" class="diagnosis-view hidden">
+                        <!-- Hero Section: Incident Header -->
+                        <header class="diagnosis-header">
+                            <div class="metadata-row">
+                                <span id="diag-impact" class="badge"></span>
+                                <span class="divider"></span>
+                                <span id="diag-status" class="badge status-active">
+                                    <i data-lucide="alert-triangle"></i>
+                                    ACTIVE
+                                </span>
+                                <span class="divider"></span>
+                                <span id="diag-service" class="metadata-text font-mono"></span>
+                                <span class="divider"></span>
+                                <span id="diag-time" class="metadata-text text-muted font-mono"></span>
+                            </div>
+                            <h1 id="diag-exception" class="exception-title font-mono"></h1>
+                        </header>
 
-                    <div class="grid-layout">
-                        <!-- AI Patch Suggestion -->
-                        <div class="card glass-effect patch-card">
-                            <div class="card-header">
-                                <h4>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                                    AI Suggested Patch
-                                </h4>
+                        <!-- Simple English Explanation (Hero Executive Card) -->
+                        <section class="card">
+                            <div class="card-header-inline">
+                                <h3 class="section-title">
+                                    <i data-lucide="sparkles" class="section-icon"></i>
+                                    Simple English Explanation
+                                </h3>
+                            </div>
+                            <p id="diag-human-summary" class="card-body-text"></p>
+                        </section>
+
+                        <!-- Technical Root Cause Analysis -->
+                        <section class="card">
+                            <div class="card-header-inline">
+                                <h3 class="section-title">
+                                    <i data-lucide="terminal" class="section-icon"></i>
+                                    Technical Root Cause Analysis
+                                </h3>
+                            </div>
+                            <p id="diag-root-cause" class="card-body-text"></p>
+                        </section>
+
+                        <!-- AI Suggested Code Patch -->
+                        <section class="card">
+                            <div class="card-header-block">
+                                <h3 class="section-title">
+                                    <i data-lucide="file-code" class="section-icon"></i>
+                                    AI Suggested Code Patch
+                                </h3>
+                                <span class="header-tag">sandbox/vulnerable_app.py</span>
                             </div>
                             <div class="code-container custom-scrollbar">
                                 <pre><code id="diag-patch"></code></pre>
                             </div>
                             <div class="card-actions">
                                 <button onclick="deployPatch()" id="btn-deploy" class="btn btn-primary">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <i data-lucide="check"></i>
                                     Deploy Patch
                                 </button>
-                                <button onclick="rollbackPatch()" id="btn-rollback" class="btn btn-danger hidden">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <button onclick="rollbackPatch()" id="btn-rollback" class="btn btn-secondary hidden">
+                                    <i data-lucide="rotate-ccw"></i>
                                     Rollback Changes
                                 </button>
                             </div>
-                        </div>
+                        </section>
 
-                        <!-- Stack Trace -->
-                        <div class="card glass-effect trace-card">
-                            <div class="card-header">
-                                <h4>Stack Trace</h4>
+                        <!-- Python Stack Trace -->
+                        <section class="card">
+                            <div class="card-header-block">
+                                <h3 class="section-title">
+                                    <i data-lucide="list" class="section-icon"></i>
+                                    Stack Trace
+                                </h3>
+                                <span class="header-tag">Python 3.11</span>
                             </div>
                             <div class="code-container custom-scrollbar">
                                 <pre><code id="diag-traceback" class="text-muted font-mono"></code></pre>
                             </div>
+                        </section>
+
+                        <!-- Operational Telemetry Dashboard Widgets -->
+                        <footer class="telemetry-footer">
+                            <div class="metric-card">
+                                <div class="metric-info">
+                                    <span class="label">Vector Search</span>
+                                    <span id="metric-vdb" class="value">~0ms</span>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-info">
+                                    <span class="label">LLM Inference</span>
+                                    <span id="metric-llm" class="value">~0ms</span>
+                                </div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-info">
+                                    <span class="label">Total Resolution</span>
+                                    <span id="metric-total" class="value">~0ms</span>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: Telemetry Metrics & Pipeline Analytics -->
+                <div id="view-metrics" class="view-panel hidden">
+                    <header class="diagnosis-header">
+                        <h1 class="exception-title">Telemetry & Pipeline Analytics</h1>
+                        <p class="metadata-text text-muted" style="margin-top: 8px;">Real-time latency metrics from ChromaDB Vector Store and Gemini Reasoning Engine.</p>
+                    </header>
+                    <div class="kpi-grid">
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="label">Avg Vector Search</span>
+                                <span id="stat-vdb-avg" class="value">0 ms</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="label">Avg LLM Inference</span>
+                                <span id="stat-llm-avg" class="value">0 ms</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="label">Avg Total Latency</span>
+                                <span id="stat-total-avg" class="value">0 ms</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-info">
+                                <span class="label">Total Incidents Diagnosed</span>
+                                <span id="stat-incidents-count" class="value">0</span>
+                            </div>
                         </div>
                     </div>
+                    <section class="card" style="padding: 0; overflow: hidden;">
+                        <div style="padding: 24px 28px; border-bottom: 1px solid var(--border-color);">
+                            <h3 class="section-title">
+                                <i data-lucide="bar-chart-2" class="section-icon"></i>
+                                Recent Telemetry Events
+                            </h3>
+                        </div>
+                        <div class="table-container" style="margin-bottom: 0; border: none; box-shadow: none;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Service</th>
+                                        <th>Exception</th>
+                                        <th>VDB Latency</th>
+                                        <th>LLM Latency</th>
+                                        <th>Total MS</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="telemetry-table-body">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No telemetry events recorded yet. Click "Trigger Chaos" to generate telemetry.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
 
-                    <div class="telemetry-footer glass-effect">
-                        <div class="metric">
-                            <span class="label">🟢 Vector Search:</span>
-                            <span id="metric-vdb" class="value">~0ms</span>
+                <!-- VIEW 3: Monitored Microservices & Cluster Nodes -->
+                <div id="view-nodes" class="view-panel hidden">
+                    <header class="diagnosis-header">
+                        <h1 class="exception-title">Monitored Microservices</h1>
+                        <p class="metadata-text text-muted" style="margin-top: 8px;">Active autonomous SRE agents deployed across production regions.</p>
+                    </header>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <th>Region</th>
+                                    <th>Status</th>
+                                    <th>CPU Load</th>
+                                    <th>Memory Usage</th>
+                                    <th>Heartbeat</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nodes-table-body">
+                                <tr>
+                                    <td class="font-mono">vulnerable_sandbox_app</td>
+                                    <td>prod-us-east-1</td>
+                                    <td><span class="badge low">ONLINE</span></td>
+                                    <td class="font-mono">4.2%</td>
+                                    <td class="font-mono">128 MB</td>
+                                    <td class="text-muted">Just now</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-mono">vector-memory-db (ChromaDB)</td>
+                                    <td>prod-us-east-1</td>
+                                    <td><span class="badge low">HEALTHY</span></td>
+                                    <td class="font-mono">1.8%</td>
+                                    <td class="font-mono">512 MB</td>
+                                    <td class="text-muted">Just now</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-mono">gemini-inference-engine</td>
+                                    <td>us-central1</td>
+                                    <td><span class="badge low">ONLINE</span></td>
+                                    <td class="font-mono">12.5%</td>
+                                    <td class="font-mono">1.02 GB</td>
+                                    <td class="text-muted">Just now</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-mono">sentinel-ai-worker-01</td>
+                                    <td>prod-us-east-1</td>
+                                    <td><span class="badge low">RUNNING</span></td>
+                                    <td class="font-mono">2.1%</td>
+                                    <td class="font-mono">256 MB</td>
+                                    <td class="text-muted">Just now</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: Settings & API Configuration -->
+                <div id="view-settings" class="view-panel hidden">
+                    <header class="diagnosis-header">
+                        <h1 class="exception-title">Autonomous SRE Settings</h1>
+                        <p class="metadata-text text-muted" style="margin-top: 8px;">Manage AI reasoning parameters, vector database indexing, and automated remediation rules.</p>
+                    </header>
+                    <div class="settings-card">
+                        <div class="settings-info">
+                            <h4>Gemini AI Reasoning Model</h4>
+                            <p>Active Model: <code class="font-mono" style="color: var(--text-main);">gemini-2.5-flash</code> with structured JSON diagnostics output.</p>
                         </div>
-                        <div class="metric">
-                            <span class="label">🟣 LLM Inference:</span>
-                            <span id="metric-llm" class="value">~0ms</span>
+                        <div>
+                            <button onclick="testApiConnection()" class="btn btn-secondary">
+                                <i data-lucide="check"></i>
+                                Test API Connection
+                            </button>
                         </div>
-                        <div class="metric highlight">
-                            <span class="label">⚡ Total Resolution:</span>
-                            <span id="metric-total" class="value">~0ms</span>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-info">
+                            <h4>Vector Store Persistent Indexing</h4>
+                            <p>ChromaDB embedding store initialized at <code class="font-mono">.chroma_db/</code> for RAG code context retrieval.</p>
+                        </div>
+                        <div>
+                            <span class="badge low">INDEX ACTIVE</span>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-info">
+                            <h4>Intelligent Deduplication Window</h4>
+                            <p>SHA-256 traceback hashing with 5-minute sliding window to suppress duplicate alerts.</p>
+                        </div>
+                        <div>
+                            <span class="badge low">300s WINDOW</span>
+                        </div>
+                    </div>
+                    <div class="settings-card">
+                        <div class="settings-info">
+                            <h4>Production Remediation Mode</h4>
+                            <p>Supervised Deployments: Requires manual operator click on "Deploy Patch" before restarting containers.</p>
+                        </div>
+                        <div>
+                            <span class="badge warning">SUPERVISED MODE</span>
                         </div>
                     </div>
                 </div>
@@ -143,5 +375,13 @@
     <div id="toast-container" class="toast-container"></div>
 
     <script src="/static/app.js"></script>
+    <script>
+        // Initialize Lucide icons on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
 </body>
 </html>

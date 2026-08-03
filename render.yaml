@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: sentinel-ai
+    runtime: python
+    buildCommand: "pip install -r requirements.txt && python ingest.py --path sandbox"
+    startCommand: "python server.py"
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11.0"

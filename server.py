@@ -4,6 +4,7 @@ import json
 import time
 import hashlib
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
@@ -12,6 +13,14 @@ from google import genai
 from google.genai import types
 
 app = FastAPI(title="Sentinel AI Core")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Global clients
 chroma_client = None
@@ -48,6 +57,7 @@ class LogPayload(BaseModel):
     traceback: str
 
 class DiagnosticOutput(BaseModel):
+    plain_english_summary: str = Field(description="A beginner-friendly, plain English explanation of what caused the crash in simple human terms without technical jargon.")
     root_cause: str = Field(description="The precise explanation of why the crash happened.")
     impact_level: str = Field(description="High, Medium, or Low based on the exception type.")
     suggested_patch: str = Field(description="The clean, corrected, production-ready code snippet.")
@@ -119,6 +129,7 @@ async def receive_log(payload: LogPayload):
     if is_simple_error:
         # Bypass expensive LLM and ChromaDB entirely for basic native Python errors
         diagnostic_json = {
+            "plain_english_summary": "There is a small grammar or typing mistake in the Python code on this line.",
             "root_cause": "Native Python Syntax or Import error detected. Bypassed LLM for cost-optimization.",
             "impact_level": "Low",
             "suggested_patch": "# Review your imports or syntax on the indicated line.\n# Pre-baked resolution applied."
@@ -137,24 +148,46 @@ RELEVANT CODE CONTEXT:
 {context}
 """
             try:
-                response = ai_client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                        response_schema=DiagnosticOutput,
-                        temperature=0.0
+                try:
+                    response = ai_client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                            response_schema=DiagnosticOutput,
+                            temperature=0.0
+                        )
                     )
-                )
+                except Exception as model_err:
+                    print(f"Fallback from gemini-2.5-flash to gemini-1.5-flash: {model_err}")
+                    response = ai_client.models.generate_content(
+                        model='gemini-1.5-flash',
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            response_mime_type="application/json",
+                            response_schema=DiagnosticOutput,
+                            temperature=0.0
+                        )
+                    )
                 diagnostic_json = json.loads(response.text)
             except Exception as e:
                 error_str = str(e).lower()
                 if "429" in error_str or "rate limit" in error_str or "resource exhausted" in error_str:
                     from fastapi import HTTPException
                     raise HTTPException(status_code=503, detail="LLM Rate limit exceeded. Please try again later.")
-                diagnostic_json = {"root_cause": f"Failed to call Gemini: {e}", "impact_level": "Unknown", "suggested_patch": ""}
+                diagnostic_json = {
+                    "plain_english_summary": "We couldn't connect to the AI Assistant right now due to an error.",
+                    "root_cause": f"Failed to call Gemini: {e}",
+                    "impact_level": "Unknown",
+                    "suggested_patch": ""
+                }
         else:
-            diagnostic_json = {"root_cause": "GEMINI_API_KEY missing. Cannot diagnose.", "impact_level": "Unknown", "suggested_patch": ""}
+            diagnostic_json = {
+                "plain_english_summary": "No Gemini API Key was found in the environment.",
+                "root_cause": "GEMINI_API_KEY missing. Cannot diagnose.",
+                "impact_level": "Unknown",
+                "suggested_patch": ""
+            }
     end_time_llm = time.time()
         
     incident = {
@@ -220,5 +253,6 @@ async def serve_frontend():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    default_port = 7860 if "SPACE_ID" in os.environ else 8000
+    port = int(os.environ.get("PORT", default_port))
+    uvicorn.run("server:app", host="0.0.0.0", port=port, reload=False)

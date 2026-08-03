@@ -27,8 +27,8 @@ COPY --chown=user:user . .
 # Create the vector database directory and bake the sandbox code into the image
 RUN python ingest.py --path sandbox
 
-# Expose the default Hugging Face port
-EXPOSE 7860
+# Expose ports for both Hugging Face Spaces (7860) and standard container runtimes (8000)
+EXPOSE 7860 8000
 
-# Command to run the application on Hugging Face Default Port
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "7860"]
+# Command to run the application using dynamic port detection
+CMD ["python", "server.py"]

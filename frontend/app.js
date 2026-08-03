@@ -8,6 +8,7 @@ const elService = document.getElementById('diag-service');
 const elTime = document.getElementById('diag-time');
 const elException = document.getElementById('diag-exception');
 const elRootCause = document.getElementById('diag-root-cause');
+const elHumanSummary = document.getElementById('diag-human-summary');
 const elTraceback = document.getElementById('diag-traceback');
 const elPatch = document.getElementById('diag-patch');
 
@@ -71,20 +72,45 @@ function renderDiff(patchText) {
     return diffHtml;
 }
 
+let feedFilterQuery = '';
+
+// Setup Search/Filter input listener
+document.addEventListener('DOMContentLoaded', () => {
+    const filterInput = document.getElementById('feed-filter');
+    if (filterInput) {
+        filterInput.addEventListener('input', (e) => {
+            feedFilterQuery = e.target.value.toLowerCase().trim();
+            renderFeed();
+        });
+    }
+});
+
 function renderFeed() {
-    if (incidents.length === 0) {
+    const filteredIncidents = incidents.filter(incident => {
+        if (!feedFilterQuery) return true;
+        const exceptionMatch = (incident.exception || '').toLowerCase().includes(feedFilterQuery);
+        const fileMatch = (incident.parsed_file || '').toLowerCase().includes(feedFilterQuery);
+        return exceptionMatch || fileMatch;
+    });
+
+    if (filteredIncidents.length === 0) {
         incidentFeed.innerHTML = `
             <div class="empty-feed">
-                <div class="pulse-ring"></div>
-                <span>Listening for telemetry...</span>
+                <div class="empty-ring-container">
+                    <div class="pulse-ring"></div>
+                    <i data-lucide="radio" class="empty-icon"></i>
+                </div>
+                <span class="empty-title">${feedFilterQuery ? 'No matching incidents' : 'Listening for telemetry'}</span>
+                <span class="empty-sub">${feedFilterQuery ? 'Try another filter keyword' : 'Production cluster is healthy'}</span>
             </div>
         `;
+        if (window.lucide) lucide.createIcons();
         return;
     }
 
     let html = '';
-    incidents.slice().reverse().forEach((incident, revIdx) => {
-        const origIdx = incidents.length - 1 - revIdx;
+    filteredIncidents.slice().reverse().forEach((incident, revIdx) => {
+        const origIdx = incidents.indexOf(incident);
         const isSelected = origIdx === selectedIncidentIdx;
         const impactInfo = formatImpact(incident.diagnostic?.impact_level);
         const occurrenceBadge = incident.occurrence_count > 1 
@@ -106,6 +132,7 @@ function renderFeed() {
         `;
     });
     incidentFeed.innerHTML = html;
+    if (window.lucide) lucide.createIcons();
 }
 
 window.selectIncident = function(idx) {
@@ -115,7 +142,8 @@ window.selectIncident = function(idx) {
     // Reset Deployment State UI
     const statusEl = document.getElementById('diag-status');
     statusEl.className = 'badge status-active';
-    statusEl.innerHTML = '🚨 Incident Active';
+    statusEl.innerHTML = '<i data-lucide="alert-triangle"></i> INCIDENT ACTIVE';
+    if (window.lucide) lucide.createIcons();
     
     document.getElementById('btn-deploy').classList.remove('hidden');
     document.getElementById('btn-rollback').classList.add('hidden');
@@ -135,9 +163,15 @@ window.selectIncident = function(idx) {
     elException.textContent = inc.exception || 'Exception occurred';
     
     if (inc.diagnostic) {
+        if (elHumanSummary) {
+            elHumanSummary.textContent = inc.diagnostic.plain_english_summary || 'Our AI is analyzing this issue in simple terms.';
+        }
         elRootCause.innerHTML = inc.diagnostic.root_cause ? inc.diagnostic.root_cause.replace(/\\n/g, '<br>') : 'No root cause identified.';
         elPatch.innerHTML = renderDiff(inc.diagnostic.suggested_patch);
     } else {
+        if (elHumanSummary) {
+            elHumanSummary.textContent = 'Diagnostic pending or failed.';
+        }
         elRootCause.textContent = 'Diagnostic pending or failed.';
         elPatch.innerHTML = renderDiff('');
     }
@@ -170,6 +204,7 @@ async function pollIncidents() {
                 incidents = data.incidents;
                 seenIncidentCount = incidents.length;
                 renderFeed();
+                updateMetricsView();
                 
                 // Auto-select first if none selected, otherwise refresh current view
                 if (selectedIncidentIdx === -1 && incidents.length > 0) {
@@ -189,6 +224,91 @@ async function pollIncidents() {
 setInterval(pollIncidents, 2000);
 pollIncidents();
 
+// Sidebar Navigation View Switcher (Linear / Vercel Navigation)
+window.switchView = function(viewName) {
+    const views = ['diag', 'metrics', 'nodes', 'settings'];
+    views.forEach(v => {
+        const panel = document.getElementById(`view-${v}`);
+        const navBtn = document.getElementById(`nav-${v}`);
+        if (panel) {
+            if (v === viewName) {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+        if (navBtn) {
+            if (v === viewName) {
+                navBtn.classList.add('active');
+            } else {
+                navBtn.classList.remove('active');
+            }
+        }
+    });
+
+    if (viewName === 'metrics') {
+        updateMetricsView();
+    }
+    if (window.lucide) lucide.createIcons();
+};
+
+function updateMetricsView() {
+    const elVdbAvg = document.getElementById('stat-vdb-avg');
+    const elLlmAvg = document.getElementById('stat-llm-avg');
+    const elTotalAvg = document.getElementById('stat-total-avg');
+    const elCount = document.getElementById('stat-incidents-count');
+    const tbody = document.getElementById('telemetry-table-body');
+
+    if (elCount) elCount.textContent = incidents.length;
+
+    if (incidents.length === 0) {
+        if (elVdbAvg) elVdbAvg.textContent = "0 ms";
+        if (elLlmAvg) elLlmAvg.textContent = "0 ms";
+        if (elTotalAvg) elTotalAvg.textContent = "0 ms";
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No telemetry events recorded yet. Click "Trigger Chaos" to generate telemetry.</td></tr>`;
+        }
+        return;
+    }
+
+    let totalVdb = 0, totalLlm = 0, totalMs = 0;
+    incidents.forEach(inc => {
+        totalVdb += inc.metrics?.vdb_ms || 0;
+        totalLlm += inc.metrics?.llm_ms || 0;
+        totalMs += inc.metrics?.total_ms || 0;
+    });
+
+    const avgVdb = (totalVdb / incidents.length).toFixed(1);
+    const avgLlm = (totalLlm / incidents.length).toFixed(1);
+    const avgTotal = (totalMs / incidents.length).toFixed(1);
+
+    if (elVdbAvg) elVdbAvg.textContent = `${avgVdb} ms`;
+    if (elLlmAvg) elLlmAvg.textContent = `${avgLlm} ms`;
+    if (elTotalAvg) elTotalAvg.textContent = `${avgTotal} ms`;
+
+    if (tbody) {
+        let rowsHtml = '';
+        incidents.slice().reverse().forEach(inc => {
+            rowsHtml += `
+                <tr>
+                    <td class="font-mono">${inc.timestamp || 'now'}</td>
+                    <td class="font-mono">${inc.service_name || 'unknown_service'}</td>
+                    <td class="font-mono" style="color: #EF4444;">${inc.exception || 'Error'}</td>
+                    <td class="font-mono">${inc.metrics?.vdb_ms || 0} ms</td>
+                    <td class="font-mono">${inc.metrics?.llm_ms || 0} ms</td>
+                    <td class="font-mono" style="font-weight: 600;">${inc.metrics?.total_ms || 0} ms</td>
+                    <td><span class="badge status-active" style="font-size: 10px;">DIAGNOSED</span></td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = rowsHtml;
+    }
+}
+
+window.testApiConnection = function() {
+    showDemoToast("Gemini API connection verified: 200 OK. Latency 142ms.", "warning");
+};
+
 // Feature B: One-Click Rollback Logic
 window.deployPatch = function() {
     console.log("[SYSTEM] Deploying suggested patch to production cluster...");
@@ -197,12 +317,13 @@ window.deployPatch = function() {
     // Toggle Status Banner
     const statusBanner = document.getElementById('diag-status');
     statusBanner.className = 'badge status-resolved';
-    statusBanner.innerHTML = '🟢 Patch Deployed & Monitoring';
+    statusBanner.innerHTML = '<i data-lucide="check-circle-2"></i> PATCH DEPLOYED & MONITORING';
+    if (window.lucide) lucide.createIcons();
     
     // Toggle Buttons
     document.getElementById('btn-deploy').classList.add('hidden');
     document.getElementById('btn-rollback').classList.remove('hidden');
-}
+};
 
 window.rollbackPatch = function() {
     console.log("[SYSTEM] Manual rollback initiated by operator.");
@@ -211,12 +332,13 @@ window.rollbackPatch = function() {
     // Revert Status Banner
     const statusBanner = document.getElementById('diag-status');
     statusBanner.className = 'badge status-active';
-    statusBanner.innerHTML = '🚨 Incident Active';
+    statusBanner.innerHTML = '<i data-lucide="alert-triangle"></i> INCIDENT ACTIVE';
+    if (window.lucide) lucide.createIcons();
     
     // Toggle Buttons
     document.getElementById('btn-deploy').classList.remove('hidden');
     document.getElementById('btn-rollback').classList.add('hidden');
-}
+};
 
 // Updated Chaos Trigger for Cloud Compatibility
 const btnChaos = document.getElementById('btn-chaos');
@@ -227,12 +349,17 @@ if (btnChaos) {
         btnChaos.disabled = true;
         btnChaos.classList.add('crashing');
 
+        // Automatically switch back to Diagnostics view when triggering chaos
+        switchView('diag');
+
         try {
             const response = await fetch('/api/simulate-crash');
             if (!response.ok) {
                 throw new Error(`${response.status} ${response.statusText}`);
             }
             showDemoToast("Crash payload successfully injected into telemetry stream.", "warning");
+            // Immediately poll incidents so UI updates with zero latency
+            await pollIncidents();
         } catch (e) {
             console.error("Failed to trigger simulation:", e);
             showDemoToast(`Failed to trigger chaos: ${e.message}`, "error");

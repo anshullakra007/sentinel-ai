@@ -65,10 +65,10 @@ def ingest_codebase(target_dir: str):
         
     print(f"Inserting {len(documents)} chunks into ChromaDB...")
     
-    # Batch add to ChromaDB
+    # Batch upsert to ChromaDB to allow safe re-ingestion without duplicate ID errors
     batch_size = 5000
     for i in range(0, len(documents), batch_size):
-        collection.add(
+        collection.upsert(
             documents=documents[i:i+batch_size],
             metadatas=metadatas[i:i+batch_size],
             ids=ids[i:i+batch_size]
