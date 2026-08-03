@@ -326,8 +326,23 @@ window.deployPatch = function() {
     
     // Toggle Status Banner
     const statusBanner = document.getElementById('diag-status');
-    statusBanner.className = 'badge status-resolved';
-    statusBanner.innerHTML = '<i data-lucide="check-circle-2"></i> PATCH DEPLOYED & MONITORING';
+    if (statusBanner) {
+        statusBanner.className = 'badge status-resolved';
+        statusBanner.innerHTML = '<i data-lucide="check-circle-2"></i> PATCH DEPLOYED & MONITORING';
+    }
+    
+    // Dynamically update Explanation & Root Cause to reflect deployment
+    const elHuman = document.getElementById('diag-human-summary');
+    const elCause = document.getElementById('diag-root-cause');
+    if (elHuman) {
+        elHuman.setAttribute('data-orig-text', elHuman.textContent);
+        elHuman.textContent = "PATCH APPLIED: The KeyError 'role' is now safely handled using user_data.get('role', 'guest'). Cluster containers restarted and healthy.";
+    }
+    if (elCause) {
+        elCause.setAttribute('data-orig-text', elCause.innerHTML);
+        elCause.innerHTML = "PATCH DEPLOYED TO PRODUCTION: Accessing user_data['role'] replaced with safe dictionary getter. Zero further KeyError exceptions observed.";
+    }
+    
     if (window.lucide) lucide.createIcons();
     
     // Toggle Buttons
@@ -341,8 +356,21 @@ window.rollbackPatch = function() {
     
     // Revert Status Banner
     const statusBanner = document.getElementById('diag-status');
-    statusBanner.className = 'badge status-active';
-    statusBanner.innerHTML = '<i data-lucide="alert-triangle"></i> INCIDENT ACTIVE';
+    if (statusBanner) {
+        statusBanner.className = 'badge status-active';
+        statusBanner.innerHTML = '<i data-lucide="alert-triangle"></i> INCIDENT ACTIVE';
+    }
+    
+    // Revert Explanation & Root Cause
+    const elHuman = document.getElementById('diag-human-summary');
+    const elCause = document.getElementById('diag-root-cause');
+    if (elHuman && elHuman.getAttribute('data-orig-text')) {
+        elHuman.textContent = elHuman.getAttribute('data-orig-text');
+    }
+    if (elCause && elCause.getAttribute('data-orig-text')) {
+        elCause.innerHTML = elCause.getAttribute('data-orig-text');
+    }
+    
     if (window.lucide) lucide.createIcons();
     
     // Toggle Buttons

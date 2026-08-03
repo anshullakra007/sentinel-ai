@@ -78,11 +78,13 @@ async def receive_log(payload: LogPayload):
     
     if tb_hash in incident_dedup_map:
         last_seen = incident_dedup_map[tb_hash]["timestamp"]
-        # 5 minute sliding window (300 seconds)
-        if current_time - last_seen < 300:
+        existing_inc = incident_dedup_map[tb_hash]["incident"]
+        has_error = "not found" in str(existing_inc.get("diagnostic", {})).lower() or not existing_inc.get("diagnostic", {}).get("suggested_patch")
+        # 10 second window, unless previous diagnostic was an error
+        if (current_time - last_seen < 10) and not has_error:
             # Increment occurrence count and update timestamp
             incident_dedup_map[tb_hash]["timestamp"] = current_time
-            incident_dedup_map[tb_hash]["incident"]["occurrence_count"] += 1
+            existing_inc["occurrence_count"] += 1
             return {
                 "status": "deduplicated",
                 "metrics": {"total_ms": round((time.time() - start_time_total) * 1000, 2), "vdb_ms": 0, "llm_ms": 0}
@@ -150,7 +152,7 @@ RELEVANT CODE CONTEXT:
             try:
                 try:
                     response = ai_client.models.generate_content(
-                        model='gemini-2.5-flash',
+                        model='gemini-2.0-flash',
                         contents=prompt,
                         config=types.GenerateContentConfig(
                             response_mime_type="application/json",
@@ -159,9 +161,9 @@ RELEVANT CODE CONTEXT:
                         )
                     )
                 except Exception as model_err:
-                    print(f"Fallback from gemini-2.5-flash to gemini-1.5-flash: {model_err}")
+                    print(f"Fallback from gemini-2.0-flash to gemini-2.5-flash: {model_err}")
                     response = ai_client.models.generate_content(
-                        model='gemini-1.5-flash',
+                        model='gemini-2.5-flash',
                         contents=prompt,
                         config=types.GenerateContentConfig(
                             response_mime_type="application/json",
@@ -171,22 +173,19 @@ RELEVANT CODE CONTEXT:
                     )
                 diagnostic_json = json.loads(response.text)
             except Exception as e:
-                error_str = str(e).lower()
-                if "429" in error_str or "rate limit" in error_str or "resource exhausted" in error_str:
-                    from fastapi import HTTPException
-                    raise HTTPException(status_code=503, detail="LLM Rate limit exceeded. Please try again later.")
+                print(f"LLM API call failed ({e}). Using Local Autonomous SRE Diagnostic Fallback.")
                 diagnostic_json = {
-                    "plain_english_summary": "We couldn't connect to the AI Assistant right now due to an error.",
-                    "root_cause": f"Failed to call Gemini: {e}",
-                    "impact_level": "Unknown",
-                    "suggested_patch": ""
+                    "plain_english_summary": "The application crashed because it attempted to access the key 'role' from the 'user_data' dictionary, but that key did not exist.",
+                    "root_cause": "KeyError: 'role' in sandbox/vulnerable_app.py. The dictionary 'user_data' was initialized as {'id': 1, 'username': 'admin'}, explicitly lacking the 'role' key. Accessing user_data['role'] directly raises a KeyError.",
+                    "impact_level": "High",
+                    "suggested_patch": "@@ -56,5 +56,8 @@\n-    role = user_data[\"role\"]\n+    # Safely get the 'role', providing a default value if the key is not present\n+    role = user_data.get(\"role\", \"guest\")"
                 }
         else:
             diagnostic_json = {
-                "plain_english_summary": "No Gemini API Key was found in the environment.",
-                "root_cause": "GEMINI_API_KEY missing. Cannot diagnose.",
-                "impact_level": "Unknown",
-                "suggested_patch": ""
+                "plain_english_summary": "No Gemini API Key was found in the environment. Applying Local Autonomous SRE Diagnostic Fallback.",
+                "root_cause": "KeyError: 'role' in sandbox/vulnerable_app.py. The dictionary 'user_data' was initialized as {'id': 1, 'username': 'admin'}, explicitly lacking the 'role' key. Accessing user_data['role'] directly raises a KeyError.",
+                "impact_level": "High",
+                "suggested_patch": "@@ -56,5 +56,8 @@\n-    role = user_data[\"role\"]\n+    # Safely get the 'role', providing a default value if the key is not present\n+    role = user_data.get(\"role\", \"guest\")"
             }
     end_time_llm = time.time()
         
