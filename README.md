@@ -23,15 +23,13 @@ app_file: server.py
 
 *An end-to-end, AI-driven observability pipeline that intercepts raw crash logs, cross-references them against codebase semantic vectors, and autonomously generates production-ready root cause analyses and patches in real-time.*
 
-###  **[Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)**
-
-</div>
+###  **[Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)**</div>
 
 ---
 
 ##  The Problem
 
-When a production outage occurs, DevOps engineers and SREs spend critical minutes (often hours) tracking down stack traces, finding the exact file and function responsible in a massive codebase, and writing a patch. This drives up **Mean Time to Recovery (MTTR)** and costs businesses thousands of dollars per minute.
+When a production outage occurs, DevOps engineers and SREs spend critical minutes (often hours) tracking down stack traces, finding the exact file and function responsible in a massive codebase, and writing a patch. This drives up**Mean Time to Recovery (MTTR)** and costs businesses thousands of dollars per minute.
 
 ##  The Solution: Sentinel AI
 
@@ -44,7 +42,7 @@ Sentinel AI eliminates the manual debugging bottleneck. It streams asynchronous 
 * **Deterministic AI Diagnostics:** Forces the Gemini LLM into a structured Pydantic schema to return exact impact levels, root causes, and diff patches.
 * **Interactive SRE Command Center:** An enterprise-grade, dark-mode terminal UI built with Tailwind CSS. Features real-time metric updates and status pills.
 * **GitHub-Style Code Diff Visualizer:** Vanilla JS DOM manipulation that provides clean, color-coded visual patches.
-* **Live Chaos Engineering Trigger:** A 1-click crash simulation button right on the dashboard to test the observability pipeline instantly.
+* **Live Chaos Engineering Trigger:**A 1-click crash simulation button right on the dashboard to test the observability pipeline instantly.
 
 ---
 
@@ -70,9 +68,7 @@ graph TD
 
 ## ️ Performance Benchmarks
 
-The system was aggressively load-tested using a custom asynchronous benchmarking suite to measure end-to-end telemetry resolution speeds under heavy concurrency, evaluating the VectorDB caching, Deduplication engine, and LLM latency.
-
-**[View the Deep Exhaustive Benchmarking Report](BENCHMARKS.md)** for detailed metrics on:
+The system was aggressively load-tested using a custom asynchronous benchmarking suite to measure end-to-end telemetry resolution speeds under heavy concurrency, evaluating the VectorDB caching, Deduplication engine, and LLM latency.**[View the Deep Exhaustive Benchmarking Report](BENCHMARKS.md)** for detailed metrics on:
 - Complex Errors (LLM Required) at varying concurrency loads
 - Deduplication Engine performance (100 concurrent identical requests)
 - LLM Bypass Fallbacks for Syntax Errors
@@ -118,7 +114,7 @@ To spin up the entire multi-container architecture locally:
 ```bash
 docker-compose up --build
 ```
-This single command spins up both the **Sentinel Core Telemetry Server** (port 8000) and the **Vulnerable Sandbox App** (port 8001), automatically networking them together.
+This single command spins up both the **Sentinel Core Telemetry Server**(port 8000) and the**Vulnerable Sandbox App**(port 8001), automatically networking them together.
 
 ---
 
@@ -129,8 +125,14 @@ This single command spins up both the **Sentinel Core Telemetry Server** (port 8
 ---
 
 ## Why I built this ?
+### Situation
+Monitoring system health and detecting anomalous behavior in infrastructure logs is traditionally done via static threshold alerts, which often lead to alert fatigue.
 
-**Situation:** Monitoring system health and detecting anomalous behavior in infrastructure logs is traditionally done via static threshold alerts, which often lead to alert fatigue.
-**Task:** I aimed to build an AI-powered observability agent (Sentinel) that dynamically analyzes system logs to detect genuine anomalies without relying on hardcoded rules.
-**Action:** I integrated log streaming and utilized machine learning anomaly detection algorithms (like Isolation Forests). I built a processing pipeline that tokenizes log entries, extracts temporal features, and flags statistical outliers in real-time. I also integrated webhooks to fire intelligent alerts only when high-confidence anomalies occur.
-**Result:** Sentinel AI provides a smarter, dynamically adapting monitoring solution, showcasing my skills in machine learning deployment, streaming data processing, and DevOps automation.
+### Task
+I aimed to build an AI-powered observability agent (Sentinel) that dynamically analyzes system logs to detect genuine anomalies without relying on hardcoded rules.
+
+### Action
+I integrated log streaming and utilized machine learning anomaly detection algorithms (like Isolation Forests). I built a processing pipeline that tokenizes log entries, extracts temporal features, and flags statistical outliers in real-time. I also integrated webhooks to fire intelligent alerts only when high-confidence anomalies occur.
+
+### Result
+Sentinel AI provides a smarter, dynamically adapting monitoring solution, showcasing my skills in machine learning deployment, streaming data processing, and DevOps automation.
