@@ -1,6 +1,6 @@
 ---
 l: Sl AI
-: 🛡️
+: ️
 lF: blu
 lT: 
 k: k
@@ -11,7 +11,7 @@ fl: v.y
 
 <v l="">
 
-# 🛡️ Sl AI
+# ️ Sl AI
 
 **Auu S Rlbly (SR) A**
 
@@ -23,17 +23,17 @@ fl: v.y
 
 *A --, AI-v bvbly l w l, -f b v, uuly u-y u ly l-.*
 
-### 🚀 **[Lv D: Sl AI C C](://uf.//ullk8/l-)**
+###  **[Lv D: Sl AI C C](://uf.//ullk8/l-)**
 
 </v>
 
 ---
 
-## ⚡ T bl
+##  T bl
 
 W u u u, DvO SR l u (f u) k w k , f fl fu bl v b, w . T v u **M T Rvy (MTTR)** bu u f ll u.
 
-## 🚀 T Slu: Sl AI
+##  T Slu: Sl AI
 
 Sl AI l ul bu blk. I yu ly, u Ab Sy T (AST) w uk y b yu b ll V Db, ulz Gl' G LLM ly. 
 
@@ -48,7 +48,7 @@ Sl AI l ul bu blk. I yu ly, u Ab Sy T (AST) w uk y b yu b ll V Db, ulz Gl' G LLM
 
 ---
 
-## 🏗️ Au Flw
+## ️ Au Flw
 
 ```
  TD
@@ -68,7 +68,7 @@ Sl AI l ul bu blk. I yu ly, u Ab Sy T (AST) w uk y b yu b ll V Db, ulz Gl' G LLM
 
 ---
 
-## 🏎️ f Bk
+## ️ f Bk
 
 T y w vly l- u u yu bk u u -- ly lu u vy uy, vlu VDB , Dul , LLM ly.
 
@@ -81,7 +81,7 @@ T y w vly l- u u yu bk u u -- ly lu u vy uy, vlu VDB , Dul , LLM ly.
 
 ---
 
-## 🛠️ Quk Gu
+## ️ Quk Gu
 
 ### 1. v Su
 Cl y ll qu (qu y 3.10+):
