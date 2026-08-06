@@ -130,14 +130,7 @@ This single command spins up both the **Sentinel Core Telemetry Server** (port 8
 
 ## Why I built this ?
 
-**Situation:** 
-While building modern software applications, developing structured and scalable solutions is critical. The requirement was to build and maintain `sentinel-ai` to address specific technical challenges and provide a robust implementation.
-
-**Task:** 
-My goal was to engineer a reliable and efficient solution for `sentinel-ai`, ensuring clean architecture, maintainability, and alignment with project objectives (Autonomous Site Reliability Engineering (SRE) Agent).
-
-**Action:** 
-I designed and implemented the core logic and project architecture, focusing on best practices in code organization and system design. I systematically tackled the problem by breaking down the requirements, writing modular code, and integrating necessary dependencies to bring the repository to life.
-
-**Result:** 
-The project successfully fulfilled its core requirements, serving as a functional codebase. It demonstrates a clear understanding of software engineering principles and provides a solid foundation for future scaling and feature additions.
+**Situation:** Monitoring system health and detecting anomalous behavior in infrastructure logs is traditionally done via static threshold alerts, which often lead to alert fatigue.
+**Task:** I aimed to build an AI-powered observability agent (Sentinel) that dynamically analyzes system logs to detect genuine anomalies without relying on hardcoded rules.
+**Action:** I integrated log streaming and utilized machine learning anomaly detection algorithms (like Isolation Forests). I built a processing pipeline that tokenizes log entries, extracts temporal features, and flags statistical outliers in real-time. I also integrated webhooks to fire intelligent alerts only when high-confidence anomalies occur.
+**Result:** Sentinel AI provides a smarter, dynamically adapting monitoring solution, showcasing my skills in machine learning deployment, streaming data processing, and DevOps automation.
