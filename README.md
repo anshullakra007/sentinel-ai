@@ -1,6 +1,6 @@
 ---
 title: Sentinel AI
-emoji: ️
+emoji: 
 colorFrom: blue
 colorTo: indigo
 sdk: docker
@@ -11,7 +11,7 @@ app_file: server.py
 
 <div align="center">
 
-# ️ Sentinel AI
+# Sentinel AI
 
 ## Why I built this ?
 
@@ -39,17 +39,17 @@ Autonomous Site Reliability Engineering (SRE) Agent
 
 *An end-to-end, AI-driven observability pipeline that intercepts raw crash logs, cross-references them against codebase semantic vectors, and autonomously generates production-ready root cause analyses and patches in real-time.*
 
-###  [Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)
+### [Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)
 
 </div>
 
 ---
 
-##  The Problem
+## The Problem
 
 When a production outage occurs, DevOps engineers and SREs spend critical minutes (often hours) tracking down stack traces, finding the exact file and function responsible in a massive codebase, and writing a patch. This drives up Mean Time to Recovery (MTTR) and costs businesses thousands of dollars per minute.
 
-##  The Solution: Sentinel AI
+## The Solution: Sentinel AI
 
 Sentinel AI eliminates the manual debugging bottleneck. It streams asynchronous telemetry, uses an Abstract Syntax Tree (AST) aware chunking system to embed your codebase into a local Vector Database, and utilizes Google's Gemini LLM to diagnose crashes instantly. 
 
@@ -64,7 +64,7 @@ Sentinel AI eliminates the manual debugging bottleneck. It streams asynchronous 
 
 ---
 
-## ️ Architecture Flow
+## Architecture Flow
 
 ```mermaid
 graph TD
@@ -84,7 +84,7 @@ graph TD
 
 ---
 
-## ️ Performance Benchmarks
+## Performance Benchmarks
 
 The system was aggressively load-tested using a custom asynchronous benchmarking suite to measure end-to-end telemetry resolution speeds under heavy concurrency, evaluating the VectorDB caching, Deduplication engine, and LLM latency.
 
@@ -97,7 +97,7 @@ The system was aggressively load-tested using a custom asynchronous benchmarking
 
 ---
 
-## ️ Quickstart Guide
+## Quickstart Guide
 
 ### 1. Environment Setup
 Clone the repository and install the required dependencies (requires Python 3.10+):
