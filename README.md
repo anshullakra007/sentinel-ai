@@ -13,6 +13,22 @@ app_file: server.py
 
 # ️ Sentinel AI
 
+## Why I built this ?
+
+### Situation
+Monitoring system health and detecting anomalous behavior in infrastructure logs is traditionally done via static threshold alerts, which often lead to alert fatigue.
+
+### Task
+I aimed to build an AI-powered observability agent (Sentinel) that dynamically analyzes system logs to detect genuine anomalies without relying on hardcoded rules.
+
+### Action
+I integrated log streaming and utilized machine learning anomaly detection algorithms (like Isolation Forests). I built a processing pipeline that tokenizes log entries, extracts temporal features, and flags statistical outliers in real-time. I also integrated webhooks to fire intelligent alerts only when high-confidence anomalies occur.
+
+### Result
+Sentinel AI provides a smarter, dynamically adapting monitoring solution, showcasing my skills in machine learning deployment, streaming data processing, and DevOps automation.
+
+---
+
 Autonomous Site Reliability Engineering (SRE) Agent
 
 [](https://www.python.org/downloads/)
@@ -127,17 +143,3 @@ This single command spins up both the Sentinel Core Telemetry Server (port 8000)
 </div>
 
 ---
-
-## Why I built this ?
-
-### Situation
-Monitoring system health and detecting anomalous behavior in infrastructure logs is traditionally done via static threshold alerts, which often lead to alert fatigue.
-
-### Task
-I aimed to build an AI-powered observability agent (Sentinel) that dynamically analyzes system logs to detect genuine anomalies without relying on hardcoded rules.
-
-### Action
-I integrated log streaming and utilized machine learning anomaly detection algorithms (like Isolation Forests). I built a processing pipeline that tokenizes log entries, extracts temporal features, and flags statistical outliers in real-time. I also integrated webhooks to fire intelligent alerts only when high-confidence anomalies occur.
-
-### Result
-Sentinel AI provides a smarter, dynamically adapting monitoring solution, showcasing my skills in machine learning deployment, streaming data processing, and DevOps automation.
