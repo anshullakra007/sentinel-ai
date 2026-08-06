@@ -1,136 +1,136 @@
 ---
-l: Sl AI
-: ️
-lF: blu
-lT: 
-k: k
-: fl
-l: 
-fl: v.y
+title: Sentinel AI
+emoji: ️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+license: mit
+app_file: server.py
 ---
 
-<v l="">
+<div align="center">
 
-# ️ Sl AI
+# ️ Sentinel AI
 
-**Auu S Rlbly (SR) A**
+**Autonomous Site Reliability Engineering (SRE) Agent**
 
-[![y 3.10+](://.l./b/y-3.10+-blu.v)](://www.y./wl/)
-[![FAI](://.l./b/FAI-0.103.0-009688.v?yl=fl&l=FAI&lCl=w)](://f.l.)
-[![CDB](://.l./b/CDB-VS-FF6F00.v)](://y.)
-[![G 1.5](://.l./b/G-1.5Fl-4285F4.v?yl=fl&l=l&lCl=w)](://.l/l//)
-[![Dk](://.l./b/Dk-Ry-2496D.v?yl=fl&l=Dk&lCl=w)](://www.k./)
+[](https://www.python.org/downloads/)
+[](https://fastapi.tiangolo.com)
+[](https://trychroma.com)
+[](https://deepmind.google/technologies/gemini/)
+[](https://www.docker.com/)
 
-*A --, AI-v bvbly l w l, -f b v, uuly u-y u ly l-.*
+*An end-to-end, AI-driven observability pipeline that intercepts raw crash logs, cross-references them against codebase semantic vectors, and autonomously generates production-ready root cause analyses and patches in real-time.*
 
-###  **[Lv D: Sl AI C C](://uf.//ullk8/l-)**
+###  **[Live Demo: Sentinel AI Command Center](https://huggingface.co/spaces/anshullakra8/sentinel-ai)**
 
-</v>
-
----
-
-##  T bl
-
-W u u u, DvO SR l u (f u) k w k , f fl fu bl v b, w . T v u **M T Rvy (MTTR)** bu u f ll u.
-
-##  T Slu: Sl AI
-
-Sl AI l ul bu blk. I yu ly, u Ab Sy T (AST) w uk y b yu b ll V Db, ulz Gl' G LLM ly. 
-
-### Ky Fu
-* **Z-Ly C I:** u u LC' y-f l v fu bu, b CDB u `ll-MLM-L6-v2`.
-* **Ayu Tly Rv:** A ly u FAI bk l wu blk l.
-* **S C-Rf:** fl v R, f yb v v bk .
-* **D AI D:** F G LLM uu y u lvl, u, ff .
-* **Iv SR C C:** A -, k- l UI bul w Tlw CSS. Fu l- u u ll.
-* **GHub-Syl C Dff Vulz:** Vll JS DOM ul v l, l- vul .
-* **Lv C T:** A 1-lk ul bu b bvbly l ly.
+</div>
 
 ---
 
-## ️ Au Flw
+##  The Problem
 
-```
- TD
- A[Vulbl A / Mv] -->|C / | B(L I)
- B -->|Ay OST yl| C[FAI Tly ]
- 
- ub Cb C
- D[T GHub R] -->|AST Cuk| [(CDB V S)]
- 
- 
- C -->|R : Fl/L/| FC-Rf 
- -.->|N S C Cuk| F
- 
- F -->|Cl | G[G 1.5 Fl LLM]
- G -->|y JSON S| H[SR Db UI]
+When a production outage occurs, DevOps engineers and SREs spend critical minutes (often hours) tracking down stack traces, finding the exact file and function responsible in a massive codebase, and writing a patch. This drives up **Mean Time to Recovery (MTTR)** and costs businesses thousands of dollars per minute.
+
+##  The Solution: Sentinel AI
+
+Sentinel AI eliminates the manual debugging bottleneck. It streams asynchronous telemetry, uses an Abstract Syntax Tree (AST) aware chunking system to embed your codebase into a local Vector Database, and utilizes Google's Gemini LLM to diagnose crashes instantly. 
+
+### Key Features
+* **Zero-Latency Context Ingestion:** Parses source code using LangChain's Python-specific splitters to preserve function boundaries, then embeds them into ChromaDB using `all-MiniLM-L6-v2`.
+* **Asynchronous Telemetry Receiver:** A highly concurrent FastAPI backend designed to process crash logs without bottlenecking the main application.
+* **Semantic Cross-Referencing:** Extracts file metadata and exception context via Regex, then performs hybrid vector searches to retrieve the exact broken code snippet.
+* **Deterministic AI Diagnostics:** Forces the Gemini LLM into a structured Pydantic schema to return exact impact levels, root causes, and diff patches.
+* **Interactive SRE Command Center:** An enterprise-grade, dark-mode terminal UI built with Tailwind CSS. Features real-time metric updates and status pills.
+* **GitHub-Style Code Diff Visualizer:** Vanilla JS DOM manipulation that provides clean, color-coded visual patches.
+* **Live Chaos Engineering Trigger:** A 1-click crash simulation button right on the dashboard to test the observability pipeline instantly.
+
+---
+
+## ️ Architecture Flow
+
+```mermaid
+graph TD
+    A[Vulnerable App / Microservice] -->|Crash / Exception| B(Log Interceptor)
+    B -->|Async POST Payload| C[FastAPI Telemetry Endpoint]
+    
+    subgraph Codebase Context
+    D[Target GitHub Repo] -->|AST Chunking| E[(ChromaDB Vector Store)]
+    end
+    
+    C -->|Regex Parse: File/Line/Exception| F{Cross-Reference Engine}
+    E -.->|Nearest Semantic Code Chunk| F
+    
+    F -->|Consolidated Prompt| G[Gemini 1.5 Flash LLM]
+    G -->|Pydantic JSON Schema| H[SRE Dashboard UI]
 ```
 
 ---
 
-## ️ f Bk
+## ️ Performance Benchmarks
 
-T y w vly l- u u yu bk u u -- ly lu u vy uy, vlu VDB , Dul , LLM ly.
+The system was aggressively load-tested using a custom asynchronous benchmarking suite to measure end-to-end telemetry resolution speeds under heavy concurrency, evaluating the VectorDB caching, Deduplication engine, and LLM latency.
 
-**[Vw D uv Bk R](BNCHMARKS.)** f l :
-- Cl (LLM Rqu) vy uy l
-- Dul f (100 u l qu)
-- LLM By Fllbk f Sy 
+**[View the Deep Exhaustive Benchmarking Report](BENCHMARKS.md)** for detailed metrics on:
+- Complex Errors (LLM Required) at varying concurrency loads
+- Deduplication Engine performance (100 concurrent identical requests)
+- LLM Bypass Fallbacks for Syntax Errors
 
-*Sl AI , -f, u bu l qu f f , u f l .*
-
----
-
-## ️ Quk Gu
-
-### 1. v Su
-Cl y ll qu (qu y 3.10+):
-```b
- l ://ub./ullk007/l-.
- l-
-y3 - vv vv
-u vv/b/v
- ll - qu.
-```
-
-C `.v` fl y yu Gl G AI ky:
-```v
-GMINIAIKY="yuky"
-```
-
-### 2. I Cb
-b b b ll v b:
-```b
-y .y -- b
-```
-
-### 3. Lu SR C C
-S Sl AI ly v vly:
-```b
-y v.y
-```
-V `://ll:8000` Db.
-
-### 4. Dk & Clu Dly
-Sl AI fully z u-y f ly Hu F S AWS/R. T `Dkfl` vly fu - u (UID 1000) `7860` f l w S v.
-
-T u ul- u llly:
-```b
-k- u --bul
-```
-T l u b **Sl C Tly Sv** ( 8000) **Vulbl Sb A** ( 8001), ully wk .
+*Sentinel AI catches, cross-references, and patches production bugs in less than a quarter of a second for cached errors, and under a second for complex errors.*
 
 ---
 
-<v l="">
-<>Bul l MTTR. f l.</>
-</v>
+## ️ Quickstart Guide
+
+### 1. Environment Setup
+Clone the repository and install the required dependencies (requires Python 3.10+):
+```bash
+git clone https://github.com/anshullakra007/sentinel-ai.git
+cd sentinel-ai
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Create a `.env` file in the root directory and add your Google Gemini API key:
+```env
+GEMINI_API_KEY="your_api_key_here"
+```
+
+### 2. Ingest the Codebase
+Embed the sandbox codebase into the local vector database:
+```bash
+python ingest.py --path sandbox
+```
+
+### 3. Launch the SRE Command Center
+Start the Sentinel AI telemetry server natively:
+```bash
+python server.py
+```
+Visit `http://localhost:8000` to open the Dashboard.
+
+### 4. Docker & Cloud Deployment
+Sentinel AI is fully containerized and production-ready for deployment to Hugging Face Spaces or AWS/Render. The `Dockerfile` natively configures a strict non-root user (UID 1000) and exposes port `7860` for compliance with enterprise PaaS environments.
+
+To spin up the entire multi-container architecture locally:
+```bash
+docker-compose up --build
+```
+This single command spins up both the **Sentinel Core Telemetry Server** (port 8000) and the **Vulnerable Sandbox App** (port 8001), automatically networking them together.
 
 ---
 
-## Wy I bul ?
+<div align="center">
+<i>Built to eliminate MTTR. Engineered for resilience.</i>
+</div>
 
-**Su:** M y l lu bv fuu l lly v l l, w f l l fu.
-**Tk:** I bul AI-w bvbly (Sl) ylly lyz y l u l wu ly ul.
-**A:** I l ulz l ly l (lk Il F). I bul l kz l , l fu, fl l ul l-. I l wbk f ll l ly w -f l u.
-**Rul:** Sl AI v , ylly lu, w y kll l ly, , DvO u.
+---
+
+## Why I built this ?
+
+**Situation:** Monitoring system health and detecting anomalous behavior in infrastructure logs is traditionally done via static threshold alerts, which often lead to alert fatigue.
+**Task:** I aimed to build an AI-powered observability agent (Sentinel) that dynamically analyzes system logs to detect genuine anomalies without relying on hardcoded rules.
+**Action:** I integrated log streaming and utilized machine learning anomaly detection algorithms (like Isolation Forests). I built a processing pipeline that tokenizes log entries, extracts temporal features, and flags statistical outliers in real-time. I also integrated webhooks to fire intelligent alerts only when high-confidence anomalies occur.
+**Result:** Sentinel AI provides a smarter, dynamically adapting monitoring solution, showcasing my skills in machine learning deployment, streaming data processing, and DevOps automation.
