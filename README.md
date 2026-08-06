@@ -128,7 +128,7 @@ This single command spins up both the **Sentinel Core Telemetry Server** (port 8
 
 ---
 
-## 🌟 STAR Story: sentinel-ai
+## Why I built this ?
 
 **Situation:** 
 While building modern software applications, developing structured and scalable solutions is critical. The requirement was to build and maintain `sentinel-ai` to address specific technical challenges and provide a robust implementation.
